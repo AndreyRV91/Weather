@@ -82,13 +82,6 @@ namespace WeatherLibrary
                                 sunriseToken = jsonResult["sys"]["sunrise"];
                                 sunsetToken = jsonResult["sys"]["sunset"];
 
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Не удалось извлечь данные " + ex.ToString());
-                                return null;
-                            }
-
                             weather.TownName = townNameToken.ToString();
                             weather.CurrentWeather.Pressure = (int)((double)(pressureToken) / MMHG);
                             weather.CurrentWeather.WindDirection = ConvertWindDirection(windDirectionToken);
@@ -96,6 +89,14 @@ namespace WeatherLibrary
                             weather.CurrentWeather.Humidity = (int)(humidityToken);
                             weather.CurrentWeather.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
                             weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
+
+                        }
+                            catch (Exception ex)
+                            {
+                                Log.Error("Не удалось извлечь данные " + ex.ToString());
+                                return null;
+                            }
+
 
                         }
 
@@ -130,6 +131,14 @@ namespace WeatherLibrary
                             sunriseToken = jsonResult["city"]["sunrise"];
                             sunsetToken = jsonResult["city"]["sunset"];
 
+                            weather.TownName = townNameToken.ToString();
+                            weather.WeatherToday.Pressure = (int)((double)(pressureToken) / MMHG);
+                            weather.WeatherToday.WindDirection = ConvertWindDirection(windDirectionToken);
+                            weather.WeatherToday.WindVelocity = (double)(windVelocityToken);
+                            weather.WeatherToday.Humidity = (int)(humidityToken);
+                            weather.WeatherToday.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
+                            weather.WeatherToday.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
+
                         }
                         catch (Exception ex)
                         {
@@ -137,13 +146,6 @@ namespace WeatherLibrary
                             return null;
                         }
 
-                        weather.TownName = townNameToken.ToString();
-                        weather.WeatherToday.Pressure = (int)((double)(pressureToken) / MMHG);
-                        weather.WeatherToday.WindDirection = ConvertWindDirection(windDirectionToken);
-                        weather.WeatherToday.WindVelocity = (double)(windVelocityToken);
-                        weather.WeatherToday.Humidity = (int)(humidityToken);
-                        weather.WeatherToday.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
-                        weather.WeatherToday.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
 
                     }
 

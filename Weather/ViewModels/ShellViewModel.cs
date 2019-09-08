@@ -117,7 +117,7 @@ namespace Weather.ViewModels
 
         public void UpdateWeather()
         {
-            if (WeatherList == null)
+            if (WeatherList == null || SelectedTown == null)
             {
                 return;
             }
@@ -153,7 +153,7 @@ namespace Weather.ViewModels
 
         public async void Search()
         {
-            if (WeatherList == null)
+            if (WeatherList == null || SelectedTown == null)
             {
                 return;
             }

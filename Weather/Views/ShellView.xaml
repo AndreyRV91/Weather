@@ -8,7 +8,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
-  
     <Grid>
         
         <Button x:Name="UpdateTownList" Content="Обновить список" HorizontalAlignment="Left" Height="33" Margin="44,47,0,0" VerticalAlignment="Top" Width="140"></Button>
