@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="DataAccess.cs" />
     <Compile Include="Models\Weather.cs" />
+    <Compile Include="Models\WeatherParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

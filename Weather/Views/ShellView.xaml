@@ -20,7 +20,7 @@
         <TextBox x:Name="CurrentWeather" HorizontalAlignment="Left" Height="97" Margin="414,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" IsReadOnly="True"/>
         <Label Content="Сейчас" HorizontalAlignment="Left" Height="28" Margin="414,47,0,0" VerticalAlignment="Top" Width="96"/>
         <Label Content="Сегодня" HorizontalAlignment="Left" Height="28" Margin="414,186,0,0" VerticalAlignment="Top" Width="96"/>
-        <TextBox x:Name="WeatherTodayTextBox" HorizontalAlignment="Left" Height="174" Margin="414,209,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" IsReadOnly="True"/>
+        <TextBox x:Name="WeatherToday" HorizontalAlignment="Left" Height="174" Margin="414,209,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" IsReadOnly="True"/>
 
         <DataGrid x:Name="WeatherList" HorizontalAlignment="Left" Height="228" Margin="44,98,0,0" SelectedItem="{Binding Path=SelectedTown, NotifyOnSourceUpdated=True}"
                   VerticalAlignment="Top" Width="298" AutoGenerateColumns="False" IsReadOnly="True"

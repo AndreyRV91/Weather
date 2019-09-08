@@ -9,13 +9,13 @@ namespace WeatherLibrary.Models
     public class Weather
     {
         public string TownName { get; set; }
-        public int Pressure { get; set; }
+        public WeatherParameters CurrentWeather { get; set; }
+        public WeatherParameters WeatherToday { get; set; }
 
-
-        public string WindDirection { get; set; }//TODO сделать перевод из градусов в слова
-        public double WindVelocity { get; set; }
-        public int Humidity { get; set; }
-        public DateTime Sunset { get; set; }
-        public DateTime Sunrise { get; set; }
+        public Weather()
+        {
+            CurrentWeather = new WeatherParameters();
+            WeatherToday = new WeatherParameters();
+        }
     }
 }

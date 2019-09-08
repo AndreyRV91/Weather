@@ -16,11 +16,25 @@ namespace Weather.ViewModels
         DataAccess DataAccess;
         WeatherLibrary.Models.Weather Weather;
 
-        #region Properties
+        #region Свойства
         ObservableCollection<WeatherLibrary.Models.Weather> _WeatherList;
         string _CurrentWeather;
         WeatherLibrary.Models.Weather _SelectedTown;
         string _TownName;
+        string _WeatherToday;
+
+        public string WeatherToday
+        {
+            get
+            {
+                return _WeatherToday;
+            }
+            set
+            {
+                _WeatherToday = value;
+                NotifyOfPropertyChange("WeatherToday");
+            }
+        }
 
         public string TownName
         {
@@ -84,15 +98,20 @@ namespace Weather.ViewModels
         }
 
 
-        public void UpdateTownList()
+        public async void UpdateTownList()
         {
             if (WeatherList != null) { WeatherList = null; }
 
             DataAccess = new DataAccess();
             WeatherList = new ObservableCollection<WeatherLibrary.Models.Weather>();
 
-           WeatherList = DataAccess.GetCurrentWeather();
-           SelectedTown = WeatherList?.FirstOrDefault();
+           WeatherList = await Task.Run(() => DataAccess.GetCurrentWeather());
+
+            if(WeatherList.FirstOrDefault() != null)
+            {
+                SelectedTown = WeatherList?.FirstOrDefault();
+            }
+
 
         }
 
@@ -110,7 +129,18 @@ namespace Weather.ViewModels
                 CurrentWeather = String.Format("Давление {0:f0} мм рт.ст. \n" +
                "Ветер: {1}, {2:f1} м/с ({3:f1} км/ч) \n" +
                "Влажность: {4:0}% \n" +
-               "Восход: {5:t} Заход: {6:t}", Weather.Pressure, Weather.WindDirection, Weather.WindVelocity, Weather.WindVelocity * 1000 / 3600, Weather.Humidity, Weather.Sunrise, Weather.Sunset);
+               "Восход: {5:t} Заход: {6:t}", 
+               Weather.CurrentWeather.Pressure, Weather.CurrentWeather.WindDirection,
+               Weather.CurrentWeather.WindVelocity, Weather.CurrentWeather.WindVelocity * 1000 / 3600, 
+               Weather.CurrentWeather.Humidity, Weather.CurrentWeather.Sunrise, Weather.CurrentWeather.Sunset);
+
+                WeatherToday = String.Format("Давление {0:f0} мм рт.ст. \n" +
+               "Ветер: {1}, {2:f1} м/с ({3:f1} км/ч) \n" +
+               "Влажность: {4:0}% \n" +
+               "Восход: {5:t} Заход: {6:t}", Weather.WeatherToday.Pressure, Weather.WeatherToday.WindDirection, 
+               Weather.WeatherToday.WindVelocity, Weather.WeatherToday.WindVelocity * 1000 / 3600, 
+               Weather.WeatherToday.Humidity, Weather.WeatherToday.Sunrise, Weather.WeatherToday.Sunset);
+
             }
             catch (Exception ex)
             {
@@ -120,36 +150,38 @@ namespace Weather.ViewModels
 
         }
 
-        public void Search()
+
+        public async void Search()
         {
             if (WeatherList == null)
             {
                 return;
             }
 
-            var Searchresult = DataAccess.GetCurrentWeather(TownName);
-            
 
-            if (Searchresult != null) // Если поиск дал результаты
+            var searchResult = await Task.Run(()=>DataAccess.GetCurrentWeather(TownName));
+
+            if (searchResult != null)
             {
-                if (WeatherList.FirstOrDefault(n => n.TownName == Searchresult.TownName) != null) //Если уже есть такой город, то не добавляем в список городов, а просто переводим выделение
+                if (WeatherList.FirstOrDefault(n=>n.TownName == TownName) != null) //если уже есть в списке
                 {
-                    SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == Searchresult.TownName);
+                    SelectedTown = SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
                 }
-                else
+                else //Если нет, то добавляем, но при условии, что города точно нет в нашем списке, т.к. внешний поиск может вестись на русском
                 {
-                    WeatherList.Add(Searchresult);
-                    SelectedTown = SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == Searchresult.TownName);
+                    if (WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName) == null)
+                    {
+                        WeatherList.Add(searchResult);
+                    }
+                    SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
                 }
-
+                
             }
-            else
+            else //Если не нашли
             {
                 MessageBox.Show("Город не найден");
             }
-
         }
-
 
     }
 }
