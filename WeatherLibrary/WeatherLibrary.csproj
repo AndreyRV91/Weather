@@ -50,7 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAccess.cs" />
+    <Compile Include="Contracts\IDataAccess.cs" />
+    <Compile Include="DataFromOpenweathermap.cs" />
     <Compile Include="Models\Weather.cs" />
     <Compile Include="Models\WeatherParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

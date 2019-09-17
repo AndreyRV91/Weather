@@ -5,15 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using WeatherLibrary.Models;
 
 namespace WeatherLibrary
 {
-
-
-    public class DataAccess
+    public class DataFromOpenweathermap: IDataAccess
     {
         const string BASE_ADDRESS = "https://api.openweathermap.org/data/2.5/";
         const string APPID = "&appid=8afa526a19c42cc1d31ad0688de135f7";
@@ -35,12 +31,16 @@ namespace WeatherLibrary
         JToken sunriseToken;
         JToken sunsetToken;
 
-        HttpClient httpClient;
+        private static readonly HttpClient httpClient;
+
+        static DataFromOpenweathermap()
+        {
+            httpClient = new HttpClient();
+        }
 
         public ObservableCollection<Weather> GetCurrentWeather()// Загрузка первоначального списка городов
         {
             ObservableCollection<Weather> weatherList = new ObservableCollection<Weather>();
-            httpClient = new HttpClient();
 
             for (int i = 0; i < CountryIdList.Length; i++)
             {
@@ -53,7 +53,6 @@ namespace WeatherLibrary
 
         public Weather GetCurrentWeather(string counrtyName)//Используется при поиске по названию страны
         {
-            httpClient = new HttpClient();
             Weather weather = GetInformationFromWeb("?q=" + counrtyName);
             return weather;
         }
@@ -62,25 +61,25 @@ namespace WeatherLibrary
         {
             Weather weather = new Weather();
 
-                using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "weather" + path + APPID)) //Получение погоды на сейчас
+            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "weather" + path + APPID)) //Получение погоды на сейчас
+            {
+
+                using (HttpResponseMessage response = httpClient.SendAsync(request).Result)
                 {
-
-                    using (HttpResponseMessage response = httpClient.SendAsync(request).Result)
+                    if (response.IsSuccessStatusCode)
                     {
-                        if (response.IsSuccessStatusCode)
-                        {
 
-                            try
-                            {
-                                jsonResultText = response.Content.ReadAsStringAsync().Result;
-                                JObject jsonResult = JObject.Parse(jsonResultText);
-                                townNameToken = jsonResult["name"];
-                                pressureToken = jsonResult["main"]["pressure"];
-                                windDirectionToken = jsonResult["wind"]["deg"];
-                                windVelocityToken = jsonResult["wind"]["speed"];
-                                humidityToken = jsonResult["main"]["humidity"];
-                                sunriseToken = jsonResult["sys"]["sunrise"];
-                                sunsetToken = jsonResult["sys"]["sunset"];
+                        try
+                        {
+                            jsonResultText = response.Content.ReadAsStringAsync().Result;
+                            JObject jsonResult = JObject.Parse(jsonResultText);
+                            townNameToken = jsonResult["name"];
+                            pressureToken = jsonResult["main"]["pressure"];
+                            windDirectionToken = jsonResult["wind"]["deg"];
+                            windVelocityToken = jsonResult["wind"]["speed"];
+                            humidityToken = jsonResult["main"]["humidity"];
+                            sunriseToken = jsonResult["sys"]["sunrise"];
+                            sunsetToken = jsonResult["sys"]["sunset"];
 
                             weather.TownName = townNameToken.ToString();
                             weather.CurrentWeather.Pressure = (int)((double)(pressureToken) / MMHG);
@@ -91,25 +90,25 @@ namespace WeatherLibrary
                             weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
 
                         }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Не удалось извлечь данные " + ex.ToString());
-                                return null;
-                            }
-
-
-                        }
-
-                        else
+                        catch (Exception ex)
                         {
-                            Log.Error("Не удалось подключиться");
+                            Log.Error("Не удалось извлечь данные " + ex.ToString());
                             return null;
                         }
 
-                    }
-                }
 
-            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "forecast" + path + APPID+ "&cnt=1")) //cnt=1 это загрузка погоды на след. день
+                    }
+
+                    else
+                    {
+                        Log.Error("Не удалось подключиться");
+                        return null;
+                    }
+
+                }
+            }
+
+            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "forecast" + path + APPID + "&cnt=1")) //cnt=1 это загрузка погоды на след. день
             {
 
                 using (HttpResponseMessage response = httpClient.SendAsync(request).Result)

@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using WeatherLibrary;
+using WeatherLibrary.Models;
 
 namespace Weather.ViewModels
 {
     public class ShellViewModel : Screen
     {
-        DataAccess DataAccess;
+        IDataAccess DataAccess;
         WeatherLibrary.Models.Weather Weather;
 
         #region Свойства
@@ -92,9 +93,9 @@ namespace Weather.ViewModels
 #endregion
 
 
-        public ShellViewModel()
+        public ShellViewModel(IDataAccess DataAccess)
         {
-
+            this.DataAccess = DataAccess;
         }
 
 
@@ -102,7 +103,7 @@ namespace Weather.ViewModels
         {
             if (WeatherList != null) { WeatherList = null; }
 
-            DataAccess = new DataAccess();
+
             WeatherList = new ObservableCollection<WeatherLibrary.Models.Weather>();
 
            WeatherList = await Task.Run(() => DataAccess.GetCurrentWeather());
