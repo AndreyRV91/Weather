@@ -6,6 +6,6 @@ namespace WeatherLibrary
     public interface IDataAccess
     {
         ObservableCollection<Weather> GetCurrentWeather();
-        Weather GetCurrentWeather(string counrtyName);
+        Weather GetCurrentWeather(string townName);
     }
 }

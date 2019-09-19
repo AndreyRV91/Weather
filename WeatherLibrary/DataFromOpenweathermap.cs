@@ -51,9 +51,9 @@ namespace WeatherLibrary
             return weatherList;
         }
 
-        public Weather GetCurrentWeather(string counrtyName)//Используется при поиске по названию страны
+        public Weather GetCurrentWeather(string townName)//Используется при поиске по названию страны
         {
-            Weather weather = GetInformationFromWeb("?q=" + counrtyName);
+            Weather weather = GetInformationFromWeb("?q=" + townName);
             return weather;
         }
 

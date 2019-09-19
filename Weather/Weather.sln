@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather", "Weather.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherLibrary", "..\WeatherLibrary\WeatherLibrary.csproj", "{F5F32AFA-9B57-451C-B4A2-AD6BF97A34F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weaather.Tests", "..\Weaather.Tests\Weaather.Tests.csproj", "{ADCAF9D2-EF5A-476A-9073-376728F3B60E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Tests", "..\Weaather.Tests\Weather.Tests.csproj", "{ADCAF9D2-EF5A-476A-9073-376728F3B60E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

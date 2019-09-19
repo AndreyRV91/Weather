@@ -99,18 +99,18 @@ namespace Weather.ViewModels
         }
 
 
-        public async void UpdateTownList()
+        public async Task UpdateTownList()
         {
             if (WeatherList != null) { WeatherList = null; }
 
 
-            WeatherList = new ObservableCollection<WeatherLibrary.Models.Weather>();
+           WeatherList = new ObservableCollection<WeatherLibrary.Models.Weather>();
 
            WeatherList = await Task.Run(() => DataAccess.GetCurrentWeather());
 
-            if(WeatherList.FirstOrDefault() != null)
+            if(WeatherList.Any())
             {
-                SelectedTown = WeatherList?.FirstOrDefault();
+                SelectedTown = WeatherList.FirstOrDefault();
             }
 
 
@@ -152,7 +152,7 @@ namespace Weather.ViewModels
         }
 
 
-        public async void Search()
+        public async Task Search()
         {
             if (WeatherList == null || SelectedTown == null)
             {
