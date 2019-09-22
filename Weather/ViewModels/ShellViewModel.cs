@@ -33,7 +33,7 @@ namespace Weather.ViewModels
             set
             {
                 _WeatherToday = value;
-                NotifyOfPropertyChange("WeatherToday");
+                NotifyOfPropertyChange(() => WeatherToday);
             }
         }
 
@@ -46,7 +46,6 @@ namespace Weather.ViewModels
             set
             {
                 _TownName = value;
-                NotifyOfPropertyChange("TownName");
             }
         }
 
@@ -59,7 +58,7 @@ namespace Weather.ViewModels
             set
             {
                 _SelectedTown = value;
-                NotifyOfPropertyChange("SelectedTown");
+                NotifyOfPropertyChange(() => SelectedTown);
             }
         }
 
@@ -72,7 +71,7 @@ namespace Weather.ViewModels
             set
             {
                 _WeatherList = value;
-                NotifyOfPropertyChange("WeatherList");
+                NotifyOfPropertyChange(() => WeatherList);
             }
         }
 
@@ -86,7 +85,7 @@ namespace Weather.ViewModels
             set
             {
                 _CurrentWeather = value;
-                NotifyOfPropertyChange("CurrentWeather");
+                NotifyOfPropertyChange(() => CurrentWeather);
             }
         }
 
@@ -166,7 +165,7 @@ namespace Weather.ViewModels
             {
                 if (WeatherList.FirstOrDefault(n=>n.TownName == TownName) != null) //если уже есть в списке
                 {
-                    SelectedTown = SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
+                    SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
                 }
                 else //Если нет, то добавляем, но при условии, что города точно нет в нашем списке, т.к. внешний поиск может вестись на русском
                 {
