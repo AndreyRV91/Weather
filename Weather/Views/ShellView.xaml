@@ -6,8 +6,27 @@
         xmlns:local="clr-namespace:Weather.Views"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-
+        Title="Прогноз погоды" Height="450" Width="800" FontSize="15" Background="#FFF9F5F0">
+    <Window.Resources>
+        <Style x:Key="SearchButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="Verdana" />
+            <Setter Property="Background" Value="#FF8888E8" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Background" Value="AliceBlue"></Setter>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="AliceBlue"></Setter>
+        </Style>
+        <Style x:Key="OrdinaryButton">
+            <Setter Property="Button.Background" Value="Azure" />
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"></ColumnDefinition>
@@ -36,11 +55,13 @@
         <!--Первая половина-->
         <Button x:Name="UpdateTownList" Content="Обновить список" Grid.Column="1" 
                 Grid.Row="1" HorizontalAlignment="Stretch" 
-                VerticalAlignment="Stretch"/>
+                VerticalAlignment="Stretch"
+                Style="{StaticResource OrdinaryButton}"/>
 
         <Button x:Name="UpdateWeather" Content="Обновить погоду" Grid.Column="3" 
                 Grid.Row="1" HorizontalAlignment="Stretch" 
-                VerticalAlignment="Stretch" />
+                VerticalAlignment="Stretch"
+                Style="{StaticResource OrdinaryButton}"/>
 
 
         <DataGrid x:Name="WeatherList"  Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3"
@@ -59,7 +80,8 @@
                  TextWrapping="Wrap" VerticalAlignment="Stretch"/>
 
         <Button x:Name="Search" Content="Поиск" HorizontalAlignment="Stretch" 
-                 Grid.Column="3" Grid.Row="7" VerticalAlignment="Stretch" Margin="60, 0, 0,0"/>
+                 Grid.Column="3" Grid.Row="7" VerticalAlignment="Stretch" Margin="60, 0, 0,0"
+                Style="{StaticResource SearchButton }" Background="#FFB2B2F6"/>
 
 
 
@@ -67,15 +89,15 @@
         <StackPanel Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3">
             <Label Content="Сейчас" HorizontalAlignment="Left" 
                    VerticalAlignment="Top"/>
-            <TextBox x:Name="CurrentWeather" HorizontalAlignment="Stretch"
-                     Height="130" TextWrapping="Wrap" VerticalAlignment="Bottom" IsReadOnly="True"/>
+            <TextBlock x:Name="CurrentWeather" HorizontalAlignment="Stretch"
+                     Height="130" TextWrapping="Wrap" VerticalAlignment="Bottom"/>
         </StackPanel>
 
         <StackPanel Grid.Column="5" Grid.Row="5" Grid.ColumnSpan="3" Grid.RowSpan="3">
             <Label Content="Сегодня" HorizontalAlignment="Left"
                    VerticalAlignment="Top"/>
-            <TextBox x:Name="WeatherToday" HorizontalAlignment="Stretch"
-                     Height="130" TextWrapping="Wrap" VerticalAlignment="Bottom" IsReadOnly="True"/>
+            <TextBlock x:Name="WeatherToday" HorizontalAlignment="Stretch"
+                     Height="130" TextWrapping="Wrap" VerticalAlignment="Bottom"/>
         </StackPanel>
 
 
