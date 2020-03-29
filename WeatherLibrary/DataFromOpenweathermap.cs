@@ -24,6 +24,7 @@ namespace WeatherLibrary
 
         string jsonResultText;
         JToken townNameToken;
+        JToken temperatureToken;
         JToken pressureToken;
         JToken windDirectionToken;
         JToken windVelocityToken;
@@ -38,30 +39,30 @@ namespace WeatherLibrary
             httpClient = new HttpClient();
         }
 
-        public ObservableCollection<Weather> GetCurrentWeather()// Загрузка первоначального списка городов
+        public ObservableCollection<WeatherBase> GetCurrentWeather()// Загрузка первоначального списка городов
         {
-            ObservableCollection<Weather> weatherList = new ObservableCollection<Weather>();
+            ObservableCollection<WeatherBase> weatherList = new ObservableCollection<WeatherBase>();
 
             for (int i = 0; i < CountryIdList.Length; i++)
             {
-                Weather weather = GetInformationFromWeb("?id=" + CountryIdList[i]);
+                WeatherBase weather = GetInformationFromWeb("?id=" + CountryIdList[i]);
                 weatherList.Add(weather);
             }
 
             return weatherList;
         }
 
-        public Weather GetCurrentWeather(string townName)//Используется при поиске по названию страны
+        public WeatherBase GetCurrentWeather(string townName)//Используется при поиске по названию страны
         {
-            Weather weather = GetInformationFromWeb("?q=" + townName);
+            WeatherBase weather = GetInformationFromWeb("?q=" + townName);
             return weather;
         }
 
-        public Weather GetInformationFromWeb(string path) //Запрос на получение погоды за сегодня и сейчас
+        public WeatherBase GetInformationFromWeb(string path) //Запрос на получение погоды за сегодня и сейчас
         {
-            Weather weather = new Weather();
+            WeatherBase weather = new WeatherBase();
 
-            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "weather" + path + APPID)) //Получение погоды на сейчас
+            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "weather" + path + APPID + "&units=metric")) //Получение погоды на сейчас
             {
 
                 using (HttpResponseMessage response = httpClient.SendAsync(request).Result)
@@ -74,6 +75,7 @@ namespace WeatherLibrary
                             jsonResultText = response.Content.ReadAsStringAsync().Result;
                             JObject jsonResult = JObject.Parse(jsonResultText);
                             townNameToken = jsonResult["name"];
+                            temperatureToken = jsonResult["main"]["temp"];
                             pressureToken = jsonResult["main"]["pressure"];
                             windDirectionToken = jsonResult["wind"]["deg"];
                             windVelocityToken = jsonResult["wind"]["speed"];
@@ -83,6 +85,7 @@ namespace WeatherLibrary
 
                             weather.TownName = townNameToken.ToString();
                             weather.CurrentWeather.Pressure = (int)((double)(pressureToken) / MMHG);
+                            weather.CurrentWeather.Temperature = (int)(temperatureToken);
                             weather.CurrentWeather.WindDirection = ConvertWindDirection(windDirectionToken);
                             weather.CurrentWeather.WindVelocity = (double)(windVelocityToken);
                             weather.CurrentWeather.Humidity = (int)(humidityToken);
@@ -108,7 +111,7 @@ namespace WeatherLibrary
                 }
             }
 
-            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "forecast" + path + APPID + "&cnt=1")) //cnt=1 это загрузка погоды на след. день
+            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "forecast" + path + APPID + "&cnt=1" + "&units=metric")) //cnt=1 это загрузка погоды на след. день
             {
 
                 using (HttpResponseMessage response = httpClient.SendAsync(request).Result)
@@ -124,6 +127,7 @@ namespace WeatherLibrary
                             IList<JToken> results = jsonResult["list"].Children().ToList();
 
                             pressureToken = results[0]["main"]["pressure"];
+                            temperatureToken = results[0]["main"]["temp"];
                             windDirectionToken = results[0]["wind"]["deg"];
                             windVelocityToken = results[0]["wind"]["speed"];
                             humidityToken = results[0]["main"]["humidity"];
@@ -132,6 +136,7 @@ namespace WeatherLibrary
 
                             weather.TownName = townNameToken.ToString();
                             weather.WeatherToday.Pressure = (int)((double)(pressureToken) / MMHG);
+                            weather.WeatherToday.Temperature = (int)(temperatureToken);
                             weather.WeatherToday.WindDirection = ConvertWindDirection(windDirectionToken);
                             weather.WeatherToday.WindVelocity = (double)(windVelocityToken);
                             weather.WeatherToday.Humidity = (int)(humidityToken);

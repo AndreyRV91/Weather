@@ -9,6 +9,7 @@ namespace WeatherLibrary.Models
     public class WeatherParameters
     {
         public int Pressure { get; set; }
+        public int Temperature { get; set; }
         public string WindDirection { get; set; }
         public double WindVelocity { get; set; }
         public int Humidity { get; set; }

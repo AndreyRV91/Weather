@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Weather.ViewModels;
+using WeatherApp.ViewModels;
 using WeatherLibrary;
 
-namespace Weather
+namespace WeatherApp
 {
     public class Bootstrapper: BootstrapperBase
     {
@@ -40,7 +40,7 @@ namespace Weather
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            DisplayRootViewFor<ShellViewModel>();
+            DisplayRootViewFor<MainWindowViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)

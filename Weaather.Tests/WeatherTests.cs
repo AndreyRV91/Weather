@@ -86,7 +86,7 @@ namespace Weather.Tests
 
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            ShellViewModel viewModel = new ShellViewModel(mockWeather);
+            MainWindowViewModel viewModel = new MainWindowViewModel(mockWeather);
 
             //Act
             viewModel.UpdateTownList().Wait();
@@ -104,7 +104,7 @@ namespace Weather.Tests
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            ShellViewModel viewModel = new ShellViewModel(mockWeather);
+            MainWindowViewModel viewModel = new MainWindowViewModel(mockWeather);
 
             //Act
             viewModel.UpdateTownList().Wait();
@@ -126,7 +126,7 @@ namespace Weather.Tests
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            ShellViewModel viewModel = new ShellViewModel(mockWeather);
+            MainWindowViewModel viewModel = new MainWindowViewModel(mockWeather);
 
             //Act
             viewModel.UpdateTownList().Wait();
@@ -142,7 +142,7 @@ namespace Weather.Tests
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            ShellViewModel viewModel = new ShellViewModel(mockWeather);
+            MainWindowViewModel viewModel = new MainWindowViewModel(mockWeather);
 
             //Act
             viewModel.UpdateTownList().Wait();
