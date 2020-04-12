@@ -208,7 +208,7 @@
                               cal:Message.Attach="[Event SelectionChanged] = [Action UpdateWeather($this)]"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="2" Orientation="Vertical">
+            <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
                 <DockPanel Margin="0 40 0 20">
                     <TextBlock Text="{Binding TownName}" Style="{StaticResource TownNameText}" Margin="10 0"/>
                     <TextBlock Style="{StaticResource TownNameText}" DataContext="{Binding CurrentWeather}">
