@@ -48,10 +48,19 @@
     <Compile Include="Converters\KMHtoMSConverter.cs" />
     <Compile Include="Converters\StringNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Converters\TimeToHHmmConverter.cs" />
+    <Compile Include="Localizations\SettingsRes.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SettingsRes.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Styles\ScrolBar.xaml">
+    <Page Include="Styles\ComboBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ScrollBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -79,9 +88,6 @@
     <Resource Include="Images\Buttons\menu_light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Buttons\refresh.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\Buttons\menu_dark.png" />
   </ItemGroup>
   <ItemGroup>
@@ -90,15 +96,22 @@
     <Resource Include="Images\Buttons\lupe.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Buttons\list_dark.png" />
-    <Resource Include="Images\Buttons\list_light.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\busyIndicator.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Buttons\moon.png" />
     <Resource Include="Images\Buttons\sun.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Buttons\refresh_dark.png" />
+    <Resource Include="Images\Buttons\refresh_light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localizations\SettingsRes.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingsRes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localizations\SettingsRes.ru.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

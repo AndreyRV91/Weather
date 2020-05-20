@@ -3,16 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converters="clr-namespace:Weather.Resources.Converters;assembly=Weather.Resources"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
         xmlns:cal="http://www.caliburnproject.org"
+        lex:LocalizeDictionary.DesignCulture="ru"
+        lex:ResxLocalizationProvider.DefaultAssembly="Weather.Resources"
+        lex:ResxLocalizationProvider.DefaultDictionary="SettingsRes"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="450" MinWidth="800">
     <Window.Resources>
         <ResourceDictionary>
-            <converters:KMHtoMSConverter x:Key="KMHtoMSConverter"/>
-            <converters:TimeToHHmmConverter x:Key="TimeToHHmmConverter"/>
-            <converters:StringNullOrEmptyToVisibilityConverter x:Key="StringNullOrEmptyToVisibilityConverter"/>
-
             <Style x:Key="SearchTextBox" TargetType="TextBox">
                 <Setter Property="Margin" Value="0 0 5 10"/>
                 <Setter Property="Padding" Value="0"/>
@@ -33,7 +32,7 @@
                                       Margin="0" Padding="{TemplateBinding Padding}"
                                       Foreground="{TemplateBinding Foreground}"
                                       HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                                <Button Grid.Column="1" Style="{StaticResource ButtonBase}" Tag="{Binding LupeIco}"
+                                <Button Grid.Column="1" Style="{StaticResource IcoButtonBase}" Tag="{Binding LupeIco}"
                                 cal:Message.Attach="Search"/>
                             </Grid>
                         </ControlTemplate>
@@ -80,115 +79,29 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-
-            <Style x:Key="RadioButtonStyle" TargetType="RadioButton">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border Background="Transparent">
-                                <ContentPresenter/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="ItemContainerStyle" TargetType="ListBoxItem">
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <Grid>
-                                <Border Name="Mask" Background="{DynamicResource BaseButtonHoverColor}" 
-                                        Visibility="Collapsed" Opacity="0.4"/>
-                                <ContentPresenter/>
-                                <RadioButton Name="Radio" GroupName="Cities" Style="{StaticResource RadioButtonStyle}"/>
-                                <Border Name="Border" Background="Transparent"/>
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Mask" Property="Visibility" Value="Visible"/>
-                                </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsMouseOver" Value="False"/>
-                                        <Condition SourceName="Radio" Property="IsChecked" Value="False"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="Mask" Property="Visibility" Value="Collapsed"/>
-                                </MultiTrigger>
-                                <Trigger SourceName="Radio" Property="IsChecked" Value="True">
-                                    <Setter TargetName="Mask" Property="Visibility" Value="Visible"/>
-                                </Trigger>
-
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <DataTemplate x:Key="ListBoxItemTemplate">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock FontSize="22" Foreground="White" Text="{Binding TownName}" Margin="2"/>
-                </Grid>
-            </DataTemplate>
-            
-            <Style x:Key="ListBoxStyle" TargetType="ListBox">
-                <Setter Property="Width" Value="300"/>
-                <Setter Property="Height" Value="210"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBox">
-                            <ScrollViewer>
-                                <Grid >
-                                    
-                                    <StackPanel IsItemsHost="True"/>
-                                    <Control Style="{StaticResource BusyIndicator}"/>
-                                </Grid>
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
-
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-
-        <Grid Grid.Row="0" Grid.RowSpan="2">
-            <Image  Source="/Weather.Resources;component/Images/Cloudy.png" Stretch="None"/>
-            <Border>
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0 0 " EndPoint="0 1">
-                        <GradientStop Color="#654E5D7A" Offset="0"/>
-                        <GradientStop Color="#4E5D7A" Offset="0.8"/>
-                        <GradientStop Color="#4E5D7A" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-            </Border>
-        </Grid>
-
-
+        
         <Grid Grid.Row="0" Style="{StaticResource TopPanel}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Style="{StaticResource ButtonBase}" Background="{DynamicResource ContainerColor}" Tag="{Binding MenuIco}"
+            <Button Grid.Column="0" Style="{StaticResource IcoButtonBase}" Background="{DynamicResource ContainerColor}" Tag="{Binding MenuIco}"
                     cal:Message.Attach="SlideMenu"/>
 
-            <TextBlock Grid.Column="1" Text="Прогноз" Foreground="White" FontWeight="Bold"/>
+            <TextBlock Grid.Column="1" Text="{lex:Loc text_Forecast}" Foreground="White" FontWeight="Medium" FontSize="20"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Grid.Column="0" Style="{StaticResource ButtonBase}" Tag="{Binding RefreshIco}" cal:Message.Attach="UpdateTownList"/>
-                <Button Grid.Column="0" Style="{StaticResource ButtonBase}" Tag="{Binding SunMoonIco}" cal:Message.Attach="ChangeTheme"/>
+                <Button Grid.Column="0" Style="{StaticResource IcoButtonBase}" Tag="{Binding RefreshIco}" cal:Message.Attach="UpdateTownList"/>
+                <Button Grid.Column="0" Style="{StaticResource IcoButtonBase}" Tag="{Binding SunMoonIco}" cal:Message.Attach="ChangeTheme"/>
                 <TextBox Style="{StaticResource SearchTextBox}" Text="{Binding TownName, Mode=OneWayToSource}"/>
             </StackPanel>
         </Grid>
@@ -196,115 +109,18 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="400"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-
-            <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="30">
-                <TextBlock FontSize="18" Foreground="White" Text="Города"/>
-                <Separator/>
-                <ListBox  Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding WeatherList}"
-                              ItemTemplate="{StaticResource ListBoxItemTemplate}" ItemContainerStyle="{StaticResource ItemContainerStyle}"
-                              cal:Message.Attach="[Event SelectionChanged] = [Action UpdateWeather($this)]"/>
-            </StackPanel>
-
-            <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
-                <DockPanel Margin="0 40 0 20">
-                    <TextBlock Text="{Binding TownName}" Style="{StaticResource TownNameText}" Margin="10 0"/>
-                    <TextBlock Style="{StaticResource TownNameText}" DataContext="{Binding CurrentWeather}">
-                       <Run Text="{Binding Temperature}"/>
-                       <Run Text="°C" />
-                    </TextBlock>
-                </DockPanel>
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="400"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0"  DataContext="{Binding CurrentWeather}" 
-                        HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Сейчас"/>
-                        <Separator Width="300"/>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Температура"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding Temperature}"/>
-                    <Run Text="°C" />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Давление"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding Pressure}"/>
-                    <Run Text="мм рт. ст."/>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Ветер"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding WindDirection}"/>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Скорость ветра"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding WindVelocity, StringFormat={}{0:f1}}"/>
-                    <Run Text="км/ч"/>
-                    <Run Text=" ("/>
-                    <Run Text="{Binding WindVelocity,Converter={StaticResource KMHtoMSConverter}, StringFormat={}{0:f1} }"/>
-                    <Run Text="м/с"/>
-                    <Run Text=")"/>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Влажность"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding Humidity}"/>
-                    <Run Text="%"/>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Восход"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding Sunrise,Converter= {StaticResource TimeToHHmmConverter}}"/>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Заход"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding Sunset,Converter= {StaticResource TimeToHHmmConverter}}"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" DataContext="{Binding WeatherToday}" 
-                        HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Завтра"/>
-                        <Separator Width="300"/>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Температура"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding Temperature}"/>
-                    <Run Text="°C" />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Давление"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding Pressure}"/>
-                    <Run Text="мм рт. ст."/>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Ветер"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding WindDirection}"/>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Скорость ветра"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding WindVelocity, StringFormat={}{0:f1}}"/>
-                    <Run Text="км/ч"/>
-                    <Run Text=" ("/>
-                    <Run Text="{Binding WindVelocity,Converter={StaticResource KMHtoMSConverter}, StringFormat={}{0:f1} }"/>
-                    <Run Text="м/с"/>
-                    <Run Text=")"/>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Влажность"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}">
-                    <Run Text="{Binding Humidity}"/>
-                    <Run Text="%"/>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Восход"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding Sunrise,Converter= {StaticResource TimeToHHmmConverter}}"/>
-                        <TextBlock Style="{StaticResource WeatherHeader}" Text="Заход"/>
-                        <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding Sunset,Converter= {StaticResource TimeToHHmmConverter}}"/>
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
-
-            <ContentControl Grid.Column="2"/>
-
             <Grid Grid.Column="0" Style="{StaticResource LeftPanel}">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-                    <Button  Style="{StaticResource ButtonBase}" Content="Прогноз" Tag="{Binding HomeIco}" />
-                    <Button  Style="{StaticResource ButtonBase}" Content="Список" Tag="{Binding ListIco}" />
-                    <Button  Style="{StaticResource ButtonBase}" Content="Настройки" Tag="{Binding SettingsIco}" />
+                    <Button  Style="{StaticResource IcoButtonBase}" Content="{lex:Loc text_Forecast}" Tag="{Binding HomeIco}" cal:Message.Attach="OpenHomePage"/>
+                    <Button  Style="{StaticResource IcoButtonBase}" Content="{lex:Loc btn_Settings}" Tag="{Binding SettingsIco}" cal:Message.Attach="OpenSettings"/>
                 </StackPanel>
             </Grid>
+
+            <ContentControl Grid.Column="1" x:Name="ActiveItem" />
         </Grid>
     </Grid>
+
+
 </Window>

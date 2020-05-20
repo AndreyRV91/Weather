@@ -94,7 +94,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ButtonBase" TargetType="{x:Type Button}">
+    <Style x:Key="IcoButtonBase" TargetType="{x:Type Button}">
         <Setter Property="Height" Value="50"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -104,14 +104,20 @@
                 <ControlTemplate TargetType="Button">
                     <Grid Background="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0" Margin="10" Stretch="Uniform" HorizontalAlignment="Center"
                                VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"
                                Source="{Binding Tag, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Button}}}"/>
-                        <Border Grid.Column="0" Grid.ColumnSpan="2" Name="Mask" Background="{DynamicResource BaseButtonHoverColor}" Opacity="0.4"/>
-                        <ContentPresenter Grid.Column="1" HorizontalAlignment="Left"/>
+                        <Border Grid.Column="0" Grid.ColumnSpan="2" Name="Mask" Background="{DynamicResource BaseButtonHoverColor}"/>
+                        <ContentPresenter Grid.Column="1" HorizontalAlignment="Center">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="FontSize" Value="18"/>
+                                </Style>
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -127,4 +133,35 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ButtonBase" TargetType="{x:Type Button}">
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Background" Value="{DynamicResource BaseButtonBackgroundColor}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid Background="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}">
+                        <Border Grid.Column="0" Grid.ColumnSpan="2" Name="Mask" Background="{DynamicResource BaseButtonHoverColor}"/>
+                        <ContentPresenter HorizontalAlignment="Center">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="FontSize" Value="18"/>
+                                </Style>
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Mask" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="Mask" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

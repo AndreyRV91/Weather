@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WeatherApp.Contracts;
+using WeatherApp.Models.ProgramSettings;
 using WeatherApp.ViewModels;
 using WeatherLibrary;
 
@@ -23,12 +25,17 @@ namespace WeatherApp
         {
             container.Instance(container);
 
-            container
-                .Singleton<IWindowManager, WindowManager>()
-                .Singleton<IEventAggregator, EventAggregator>();
+            container.Singleton<IWindowManager, WindowManager>();
+            container.Singleton<IEventAggregator, EventAggregator>();
+            container.Singleton<IMenuPage, SettingsViewModel>();
+            container.Singleton<IMenuPage, HomePageViewModel>();
 
             container
                 .PerRequest<IDataAccess, DataFromOpenweathermap>();
+
+            var settings = new ProgramSettings();
+
+            container.Instance<IProgramSettings>(settings);
 
             GetType().Assembly.GetTypes().
                 Where(type => type.IsClass)
@@ -40,6 +47,13 @@ namespace WeatherApp
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            var settings = (ProgramSettings)container.GetInstance<IProgramSettings>();
+            if(!settings.LoadSettings())
+            {
+                settings.SetDefault();
+            }
+            LocalizationManager.Instance.SetCultureAtStartUp();
+
             DisplayRootViewFor<MainWindowViewModel>();
         }
 

@@ -9,7 +9,8 @@
                 <local:Bootstrapper x:Key="Bootstrapper"/>
             </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Weather.Resources;component/Styles/MainResource.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/Weather.Resources;component/Styles/ScrolBar.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Weather.Resources;component/Styles/ScrollBar.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Weather.Resources;component/Styles/ComboBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
     </Application.Resources>

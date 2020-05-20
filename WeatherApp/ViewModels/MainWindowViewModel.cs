@@ -5,36 +5,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using WeatherApp.Contracts;
 using WeatherApp.Messages;
+using WeatherApp.Models.ProgramSettings;
+using WeatherApp.Views;
 using WeatherLibrary;
 using WeatherLibrary.Models;
+using static WeatherApp.Models.Enums;
 
 namespace WeatherApp.ViewModels
 {
-    public class MainWindowViewModel : Screen, IHandle<ChangeTheme>
+    public class MainWindowViewModel : Conductor<IMenuPage>,
+                                       IHandle<ChangeTheme>
     {
-        private readonly IDataAccess DataAccess;
         private readonly IEventAggregator _eventAggregator;
-        private int _theme;
+        private readonly IProgramSettings _programSettings;
 
         #region Properties
-
-        public string TownName { get { return _townName; } set { Set(ref _townName, value); } }
-        private string _townName;
-        public int Temperature { get { return _temperature; } set { Set(ref _temperature, value); } }
-        private int _temperature;
-
-        public WeatherBase SelectedTown { get { return _selectedTown; } set { Set(ref _selectedTown, value); } }
-        private WeatherBase _selectedTown;
-
-        public ObservableCollection<WeatherBase> WeatherList { get { return _weatherList; } set { Set(ref _weatherList, value); } }
-        private ObservableCollection<WeatherBase> _weatherList;
-
-        public WeatherParameters CurrentWeather { get { return _currentWeather; } set { Set(ref _currentWeather, value); } }
-        private WeatherParameters _currentWeather;
-
-        public WeatherParameters WeatherToday { get { return _weatherToday; } set { Set(ref _weatherToday, value); } }
-        private WeatherParameters _weatherToday;
 
         public bool IsStretchedMenu { get { return _isStretchedMenu; } set { Set(ref _isStretchedMenu, value); } }
         private bool _isStretchedMenu;
@@ -42,94 +29,25 @@ namespace WeatherApp.ViewModels
         public bool IsBusy { get { return _isBusy; } set { Set(ref _isBusy, value); } }
         private bool _isBusy;
 
+        public readonly Uri LightTheme = new Uri("pack://application:,,,/Weather.Resources;component/Styles/Themes/LightTheme.xaml");
+        public readonly Uri DarkTheme = new Uri("pack://application:,,,/Weather.Resources;component/Styles/Themes/DarkTheme.xaml");
+
         #endregion
 
-        public MainWindowViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator)
+        public MainWindowViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator, IProgramSettings programSettings)
         {
-            this.DataAccess = DataAccess;
+            _programSettings = programSettings;
             _eventAggregator = eventAggregator;
 
-            _theme = 2;//TODO Upload
-            SetTheme(_theme);
+            SetTheme(_programSettings.Theme);
+            OpenHomePage();
         }
 
-        protected override async void OnActivate()
+        protected override void OnActivate()
         {
             _eventAggregator.Subscribe(this);
 
-            await UpdateTownList();
-
             base.OnActivate();
-        }
-
-        public async Task UpdateTownList()
-        {
-            WeatherList?.Clear();
-            
-            WeatherList = new ObservableCollection<WeatherBase>();
-
-            IsBusy = true;
-            WeatherList = await Task.Run(() => DataAccess.GetCurrentWeather());
-            IsBusy = false;
-
-            if (WeatherList.Any() && SelectedTown==null)
-            {
-                SelectedTown = WeatherList.FirstOrDefault();
-            }
-            UpdateWeather(SelectedTown);
-        }
-
-        public void UpdateWeather(WeatherBase selectedTown)
-        {
-            if (WeatherList == null || SelectedTown == null || WeatherList.Count==0)
-            {
-                return;
-            }
-            
-            try
-            {
-                TownName = selectedTown.TownName;
-
-                SelectedTown = selectedTown;
-                CurrentWeather = SelectedTown.CurrentWeather;
-                WeatherToday = selectedTown.WeatherToday;
-
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.ToString());
-            }
-        }
-
-        public async Task Search()
-        {
-            if (WeatherList == null || SelectedTown == null)
-            {
-                return;
-            }
-            
-            var searchResult = await Task.Run(() => DataAccess.GetCurrentWeather(TownName));
-
-            if (searchResult != null)
-            {
-                if (WeatherList.FirstOrDefault(n => n.TownName == TownName) != null) //если уже есть в списке
-                {
-                    SelectedTown = SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
-                }
-                else //Если нет, то добавляем, но при условии, что города точно нет в нашем списке, т.к. внешний поиск может вестись на русском
-                {
-                    if (WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName) == null)
-                    {
-                        WeatherList.Add(searchResult);
-                    }
-                    SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
-                }
-
-            }
-            else //Если не нашли
-            {
-                MessageBox.Show("Город не найден");
-            }
         }
 
         public void SlideMenu()
@@ -139,10 +57,23 @@ namespace WeatherApp.ViewModels
 
         public void ChangeTheme()
         {
-            if (_theme == 1) _theme = 2;
-            else _theme = 1;
+            if (_programSettings.Theme == 1) _programSettings.Theme = 2;
+            else _programSettings.Theme = 1;
+            _programSettings.SaveSettings();
 
-            _eventAggregator.PublishOnUIThread(new ChangeTheme() { Theme = _theme });
+            _eventAggregator.PublishOnUIThread(new ChangeTheme() { Theme = _programSettings.Theme });
+        }
+
+        public void OpenSettings()
+        {
+            var vm = IoC.Get<SettingsViewModel>();
+            ActivateItem(vm);
+        }
+
+        public void OpenHomePage()
+        {
+            var vm = IoC.Get<HomePageViewModel>();
+            ActivateItem(vm);
         }
 
         protected override void OnDeactivate(bool close)
@@ -150,23 +81,50 @@ namespace WeatherApp.ViewModels
             _eventAggregator.Unsubscribe(this);
             base.OnDeactivate(close);
         }
+
+        public async Task Search()
+        {
+            var vm = ActiveItem as HomePageViewModel;
+            if (vm != null)
+            {
+                await vm.Search();
+            }
+        }        
         
+        public async Task UpdateTownList()
+        {
+            var vm = ActiveItem as HomePageViewModel;
+            if (vm != null)
+            {
+                await vm.UpdateTownList();
+            }
+        }
 
         private void SetTheme(int theme)
         {
             var ThemeResourceDictionary = new ResourceDictionary();
-            switch (_theme)
+            var resources = Application.Current.Resources;
+            Uri oldTheme = null;
+
+            switch (_programSettings.Theme)
             {
-                case 1:
-                    ThemeResourceDictionary.Source = new Uri("pack://application:,,,/Weather.Resources;component/Styles/Themes/LightTheme.xaml");
+                case (int)ThemeEnum.LightTheme:
+                    ThemeResourceDictionary.Source = LightTheme;
+                    oldTheme = DarkTheme;
                     break;
-                case 2:
-                    ThemeResourceDictionary.Source = new Uri("pack://application:,,,/Weather.Resources;component/Styles/Themes/DarkTheme.xaml");
+                case (int)ThemeEnum.DarkTheme:
+                    ThemeResourceDictionary.Source = DarkTheme;
+                    oldTheme = LightTheme;
                     break;
             }
-            
-            //TODO Remove previous key
-            Application.Current.Resources.MergedDictionaries.Add(ThemeResourceDictionary);
+
+            var oldThemeResource = resources.MergedDictionaries.Where(x => x.Source != null).FirstOrDefault(d => d.Source.ToString().ToUpper() == oldTheme.ToString().ToUpper());
+
+            resources.MergedDictionaries.Add(ThemeResourceDictionary);
+            if (oldThemeResource != null)
+            {
+                resources.MergedDictionaries.Remove(oldThemeResource);
+            }
         }
 
         public void Handle(ChangeTheme message)
@@ -175,26 +133,41 @@ namespace WeatherApp.ViewModels
             NotifyOfPropertyChange(() => SettingsIco);
             NotifyOfPropertyChange(() => MenuIco);
             NotifyOfPropertyChange(() => HomeIco);
-            NotifyOfPropertyChange(() => ListIco);
             NotifyOfPropertyChange(() => SunMoonIco);
+            NotifyOfPropertyChange(() => RefreshIco);
         }
 
         #region Images
-        public string RefreshIco=> "/Weather.Resources;component/Images/Buttons/refresh.png";
-        public string LupeIco=> "/Weather.Resources;component/Images/Buttons/lupe.png";
-        
+        public string LupeIco => "/Weather.Resources;component/Images/Buttons/lupe.png";
+
         public string SettingsIco
         {
             get
             {
-                switch (_theme)
+                switch (_programSettings.Theme)
                 {
-                    case 1:
+                    case (int)ThemeEnum.LightTheme:
                         return "/Weather.Resources;component/Images/Buttons/settings_light.png";
-                    case 2:
+                    case (int)ThemeEnum.DarkTheme:
                         return "/Weather.Resources;component/Images/Buttons/settings_dark.png";
                     default:
                         return "/Weather.Resources;component/Images/Buttons/settings_light.png";
+                }
+            }
+        }
+
+        public string RefreshIco
+        {
+            get
+            {
+                switch (_programSettings.Theme)
+                {
+                    case (int)ThemeEnum.LightTheme:
+                        return "/Weather.Resources;component/Images/Buttons/refresh_light.png";
+                    case (int)ThemeEnum.DarkTheme:
+                        return "/Weather.Resources;component/Images/Buttons/refresh_dark.png";
+                    default:
+                        return "/Weather.Resources;component/Images/Buttons/refresh_light.png";
                 }
             }
         }
@@ -203,11 +176,11 @@ namespace WeatherApp.ViewModels
         {
             get
             {
-                switch (_theme)
+                switch (_programSettings.Theme)
                 {
-                    case 1:
+                    case (int)ThemeEnum.LightTheme:
                         return "/Weather.Resources;component/Images/Buttons/menu_light.png";
-                    case 2:
+                    case (int)ThemeEnum.DarkTheme:
                         return "/Weather.Resources;component/Images/Buttons/menu_dark.png";
                     default:
                         return "/Weather.Resources;component/Images/Buttons/menu_light.png";
@@ -219,30 +192,14 @@ namespace WeatherApp.ViewModels
         {
             get
             {
-                switch (_theme)
+                switch (_programSettings.Theme)
                 {
-                    case 1:
+                    case (int)ThemeEnum.LightTheme:
                         return "/Weather.Resources;component/Images/Buttons/home_light.png";
-                    case 2:
+                    case (int)ThemeEnum.DarkTheme:
                         return "/Weather.Resources;component/Images/Buttons/home_dark.png";
                     default:
                         return "/Weather.Resources;component/Images/Buttons/home_light.png";
-                }
-            }
-        }
-
-        public string ListIco
-        {
-            get
-            {
-                switch (_theme)
-                {
-                    case 1:
-                        return "/Weather.Resources;component/Images/Buttons/list_light.png";
-                    case 2:
-                        return "/Weather.Resources;component/Images/Buttons/list_dark.png";
-                    default:
-                        return "/Weather.Resources;component/Images/Buttons/list_light.png";
                 }
             }
         }
@@ -251,11 +208,11 @@ namespace WeatherApp.ViewModels
         {
             get
             {
-                switch (_theme)
+                switch (_programSettings.Theme)
                 {
-                    case 1:
+                    case (int)ThemeEnum.LightTheme:
                         return "/Weather.Resources;component/Images/Buttons/sun.png";
-                    case 2:
+                    case (int)ThemeEnum.DarkTheme:
                         return "/Weather.Resources;component/Images/Buttons/moon.png";
                     default:
                         return "/Weather.Resources;component/Images/Buttons/sun.png";

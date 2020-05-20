@@ -1,12 +1,20 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:ResourcesApp">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush Color="#D8F6F6F6" x:Key="ContainerColor"/>
 
     <SolidColorBrush Color="Black" x:Key="TextForeground"/>
 
-    <SolidColorBrush Color="#A1A1A2" x:Key="BaseButtonHoverColor"/>
+    <SolidColorBrush Color="#50A1A1A2" x:Key="BaseButtonHoverColor"/>
 
     <SolidColorBrush Color="#D3D3D3" x:Key="ListBoxItemColor"/>
+
+    <!--Combobox-->
+    <SolidColorBrush Color="#E0E0E9" x:Key="ComboboxBackgroundColor"/>
+    <SolidColorBrush Color="#16161E" x:Key="ComboboxBrushColor"/>
+    <!--Combobox-->
+
+    <!--BaseButton-->
+    <SolidColorBrush Color="#E0E0E9" x:Key="BaseButtonBackgroundColor"/>
+    <!--BaseButton-->
 </ResourceDictionary>
