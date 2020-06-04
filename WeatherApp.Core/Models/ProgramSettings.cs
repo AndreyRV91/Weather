@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Serialization;
 
-namespace WeatherApp.Models.ProgramSettings
+namespace WeatherApp.Core.Models.ProgramSettings
 {
     public interface IProgramSettings
     {

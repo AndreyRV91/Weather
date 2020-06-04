@@ -154,4 +154,10 @@
   <data name="btn_Save" xml:space="preserve">
     <value>Сохранить</value>
   </data>
+  <data name="text_TownNotFound" xml:space="preserve">
+    <value>Город не найден</value>
+  </data>
+  <data name="text_ErrorWhileRetrievingData" xml:space="preserve">
+    <value>Произошла ошибка при получении данных</value>
+  </data>
 </root>

@@ -1,11 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using Caliburn.Micro;
+using System.Threading.Tasks;
 using WeatherLibrary.Models;
 
 namespace WeatherLibrary
 {
     public interface IDataAccess
     {
-        ObservableCollection<WeatherBase> GetCurrentWeather();
-        WeatherBase GetCurrentWeather(string townName);
+        Task<BindableCollection<WeatherBase>> GetCurrentWeather();
+        Task<WeatherBase >GetCurrentWeather(string townName);
     }
 }

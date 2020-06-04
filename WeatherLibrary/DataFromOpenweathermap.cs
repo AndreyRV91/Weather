@@ -1,26 +1,27 @@
-﻿using Newtonsoft.Json.Linq;
-using NLog.Fluent;
+﻿using Caliburn.Micro;
+using Newtonsoft.Json.Linq;
+using NLog;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using WeatherApp.Core;
+using WeatherApp.Core.Infrastructure;
 using WeatherLibrary.Models;
 
 namespace WeatherLibrary
 {
-    public class DataFromOpenweathermap: IDataAccess
+    public class DataFromOpenweathermap : IDataAccess
     {
         const string BASE_ADDRESS = "https://api.openweathermap.org/data/2.5/";
-        const string APPID = "&appid=8afa526a19c42cc1d31ad0688de135f7";
+        const string APPID = "8afa526a19c42cc1d31ad0688de135f7";
 
         const double MMHG = 1.333;
 
-        string[] windDirections = { "Северный", "Северо-северо-восточный", "Северо-восточный", "Восток-северо-восточный", "Восточный",
-            "Восток-юго-восточный", "Юго-восточный", "Юго-юго-восточный", "Южный", "Юго-юго-западный", "Юго-западный", "Запад-юго-западный",
-            "Западный", "Запад-северо-западный", "Северо-западный", "Северо-северо-западный" };
+        string[] CountryIdList = { "4740157", "564723", "564487",  "3201984", "524901" }; //just random town list
 
-        string[] CountryIdList = { "4740157", "4310411", "564723", "564487", "6446507", "3201984", "524901" };// Просто рандомные id городов для начального списка
+        string lng = LocalizationManager.CultureName;
 
         string jsonResultText;
         JToken townNameToken;
@@ -32,150 +33,110 @@ namespace WeatherLibrary
         JToken sunriseToken;
         JToken sunsetToken;
 
-        private static readonly HttpClient httpClient;
+        private enum CNT { todayWeather = 1 }
 
-        static DataFromOpenweathermap()
+        private static readonly Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public async Task<BindableCollection<WeatherBase>> GetCurrentWeather() //Using for update weather
         {
-            httpClient = new HttpClient();
-        }
+            var weatherList = new BindableCollection<WeatherBase>();
 
-        public ObservableCollection<WeatherBase> GetCurrentWeather()// Загрузка первоначального списка городов
-        {
-            ObservableCollection<WeatherBase> weatherList = new ObservableCollection<WeatherBase>();
-
-            for (int i = 0; i < CountryIdList.Length; i++)
+            try
             {
-                WeatherBase weather = GetInformationFromWeb("?id=" + CountryIdList[i]);
-                weatherList.Add(weather);
+                for (int i = 0; i < CountryIdList.Length; i++)
+                {
+                    WeatherBase weather = await GetInformationFromWeb($"?id={CountryIdList[i]}&lang={lng}").ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
+                    weatherList.Add(weather);
+                }
+            }
+            catch
+            {
+                return null;
             }
 
             return weatherList;
         }
 
-        public WeatherBase GetCurrentWeather(string townName)//Используется при поиске по названию страны
+        public async Task<WeatherBase> GetCurrentWeather(string townName)//Using for town name search
         {
-            WeatherBase weather = GetInformationFromWeb("?q=" + townName);
+            WeatherBase weather;
+
+            try
+            {
+                weather = await GetInformationFromWeb($"?q={townName}&lang={lng}").ConfigureAwait(false);
+            }
+            catch
+            {
+                return null;
+            }
+
             return weather;
         }
 
-        public WeatherBase GetInformationFromWeb(string path) //Запрос на получение погоды за сегодня и сейчас
+        private async Task<WeatherBase> GetInformationFromWeb(string path) //request for today's weather forecast
         {
             WeatherBase weather = new WeatherBase();
+            HttpResponseMessage response = new HttpResponseMessage();
+            JObject jsonResult = new JObject();
 
-            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "weather" + path + APPID + "&units=metric")) //Получение погоды на сейчас
+            try
             {
+                response = await Http.GetAsync($"{BASE_ADDRESS}weather{path}&appid={APPID}&units=metric").ConfigureAwait(false);
 
-                using (HttpResponseMessage response = httpClient.SendAsync(request).Result)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
+                jsonResultText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                jsonResult = JObject.Parse(jsonResultText);
+                townNameToken = jsonResult["name"];
+                temperatureToken = jsonResult["main"]["temp"];
+                pressureToken = jsonResult["main"]["pressure"];
+                windDirectionToken = jsonResult["wind"]["deg"];
+                windVelocityToken = jsonResult["wind"]["speed"];
+                humidityToken = jsonResult["main"]["humidity"];
+                sunriseToken = jsonResult["sys"]["sunrise"];
+                sunsetToken = jsonResult["sys"]["sunset"];
 
-                        try
-                        {
-                            jsonResultText = response.Content.ReadAsStringAsync().Result;
-                            JObject jsonResult = JObject.Parse(jsonResultText);
-                            townNameToken = jsonResult["name"];
-                            temperatureToken = jsonResult["main"]["temp"];
-                            pressureToken = jsonResult["main"]["pressure"];
-                            windDirectionToken = jsonResult["wind"]["deg"];
-                            windVelocityToken = jsonResult["wind"]["speed"];
-                            humidityToken = jsonResult["main"]["humidity"];
-                            sunriseToken = jsonResult["sys"]["sunrise"];
-                            sunsetToken = jsonResult["sys"]["sunset"];
-
-                            weather.TownName = townNameToken.ToString();
-                            weather.CurrentWeather.Pressure = (int)((double)(pressureToken) / MMHG);
-                            weather.CurrentWeather.Temperature = (int)(temperatureToken);
-                            weather.CurrentWeather.WindDirection = ConvertWindDirection(windDirectionToken);
-                            weather.CurrentWeather.WindVelocity = (double)(windVelocityToken);
-                            weather.CurrentWeather.Humidity = (int)(humidityToken);
-                            weather.CurrentWeather.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
-                            weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error("Не удалось извлечь данные " + ex.ToString());
-                            return null;
-                        }
+                weather.TownName = townNameToken.ToString();
+                weather.CurrentWeather.Pressure = (int)((double)(pressureToken) / MMHG);
+                weather.CurrentWeather.Temperature = (int)(temperatureToken);
+                weather.CurrentWeather.WindDirection = windDirectionToken != null? (double)(windDirectionToken): 0 ;
+                weather.CurrentWeather.WindVelocity = (double)(windVelocityToken);
+                weather.CurrentWeather.Humidity = (int)(humidityToken);
+                weather.CurrentWeather.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
+                weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
 
 
-                    }
+                response = await Http.GetAsync($"{BASE_ADDRESS}forecast{path}&appid={APPID}&cnt={(int)CNT.todayWeather}&units=metric").ConfigureAwait(false);
 
-                    else
-                    {
-                        Log.Error("Не удалось подключиться");
-                        return null;
-                    }
+                jsonResultText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                jsonResult = JObject.Parse(jsonResultText);
 
-                }
+                IList<JToken> results = jsonResult["list"].Children().ToList();
+
+                pressureToken = results[0]["main"]["pressure"];
+                temperatureToken = results[0]["main"]["temp"];
+                windDirectionToken = results[0]["wind"]["deg"];
+                windVelocityToken = results[0]["wind"]["speed"];
+                humidityToken = results[0]["main"]["humidity"];
+                sunriseToken = jsonResult["city"]["sunrise"];
+                sunsetToken = jsonResult["city"]["sunset"];
+
+                weather.TownName = townNameToken.ToString();
+                weather.WeatherToday.Pressure = (int)((double)(pressureToken) / MMHG);
+                weather.WeatherToday.Temperature = (int)(temperatureToken);
+                weather.WeatherToday.WindDirection = windDirectionToken != null ? (double)(windDirectionToken) : 0;
+                weather.WeatherToday.WindVelocity = (double)(windVelocityToken);
+                weather.WeatherToday.Humidity = (int)(humidityToken);
+                weather.WeatherToday.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
+                weather.WeatherToday.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
+
             }
-
-            using (var request = new HttpRequestMessage(new HttpMethod("POST"), BASE_ADDRESS + "forecast" + path + APPID + "&cnt=1" + "&units=metric")) //cnt=1 это загрузка погоды на след. день
+            catch (Exception ex)
             {
-
-                using (HttpResponseMessage response = httpClient.SendAsync(request).Result)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        try
-                        {
-                            jsonResultText = response.Content.ReadAsStringAsync().Result;
-                            JObject jsonResult = JObject.Parse(jsonResultText);
-
-                            IList<JToken> results = jsonResult["list"].Children().ToList();
-
-                            pressureToken = results[0]["main"]["pressure"];
-                            temperatureToken = results[0]["main"]["temp"];
-                            windDirectionToken = results[0]["wind"]["deg"];
-                            windVelocityToken = results[0]["wind"]["speed"];
-                            humidityToken = results[0]["main"]["humidity"];
-                            sunriseToken = jsonResult["city"]["sunrise"];
-                            sunsetToken = jsonResult["city"]["sunset"];
-
-                            weather.TownName = townNameToken.ToString();
-                            weather.WeatherToday.Pressure = (int)((double)(pressureToken) / MMHG);
-                            weather.WeatherToday.Temperature = (int)(temperatureToken);
-                            weather.WeatherToday.WindDirection = ConvertWindDirection(windDirectionToken);
-                            weather.WeatherToday.WindVelocity = (double)(windVelocityToken);
-                            weather.WeatherToday.Humidity = (int)(humidityToken);
-                            weather.WeatherToday.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
-                            weather.WeatherToday.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error("Не удалось извлечь данные " + ex.ToString());
-                            return null;
-                        }
-
-
-                    }
-
-                    else
-                    {
-                        Log.Error("Не удалось подключиться");
-                        return null;
-                    }
-
-                }
+                logger.Error(ex.ToString(), "Error while converting data ");
+                throw;
             }
 
             return weather;
-        }
 
-
-        private string ConvertWindDirection(JToken windDirectionToken) //Конвертация градусов в направление ветра
-        {
-            if (windDirectionToken == null)
-            {
-                return "Не определено";
-            }
-            double windDirection = (double)(windDirectionToken);
-            int windQuater = (int)((windDirection / 22.5) + 0.5);
-            string result = windDirections[windQuater % 16];
-            return (windDirections[windQuater % 16]);
         }
     }
 }

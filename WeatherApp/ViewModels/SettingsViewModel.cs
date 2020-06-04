@@ -1,7 +1,6 @@
 ﻿using Caliburn.Micro;
 using WeatherApp.Contracts;
-using WeatherApp.Messages;
-using WeatherApp.Models.ProgramSettings;
+using WeatherApp.Core.Models.ProgramSettings;
 
 namespace WeatherApp.ViewModels
 {

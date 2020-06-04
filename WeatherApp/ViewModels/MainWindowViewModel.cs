@@ -1,17 +1,13 @@
 ﻿using Caliburn.Micro;
-using NLog.Fluent;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using WeatherApp.Contracts;
-using WeatherApp.Messages;
-using WeatherApp.Models.ProgramSettings;
-using WeatherApp.Views;
+using WeatherApp.Core.Messages;
+using WeatherApp.Core.Models.ProgramSettings;
 using WeatherLibrary;
-using WeatherLibrary.Models;
-using static WeatherApp.Models.Enums;
+using static WeatherApp.Core.Models.Enums;
 
 namespace WeatherApp.ViewModels
 {
@@ -32,6 +28,8 @@ namespace WeatherApp.ViewModels
         public readonly Uri LightTheme = new Uri("pack://application:,,,/Weather.Resources;component/Styles/Themes/LightTheme.xaml");
         public readonly Uri DarkTheme = new Uri("pack://application:,,,/Weather.Resources;component/Styles/Themes/DarkTheme.xaml");
 
+        public string SearchTownName { get { return _searchTownName; } set { Set(ref _searchTownName, value); } }
+        private string _searchTownName;
         #endregion
 
         public MainWindowViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator, IProgramSettings programSettings)
@@ -85,9 +83,10 @@ namespace WeatherApp.ViewModels
         public async Task Search()
         {
             var vm = ActiveItem as HomePageViewModel;
+
             if (vm != null)
             {
-                await vm.Search();
+                await vm.Search(SearchTownName);
             }
         }        
         

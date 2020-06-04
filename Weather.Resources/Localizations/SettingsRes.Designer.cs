@@ -22,7 +22,7 @@ namespace Weather.Resources.Localizations {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SettingsRes {
+    public class SettingsRes {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Weather.Resources.Localizations {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Weather.Resources.Localizations.SettingsRes", typeof(SettingsRes).Assembly);
@@ -51,7 +51,7 @@ namespace Weather.Resources.Localizations {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
-        internal static string btn_Save {
+        public static string btn_Save {
             get {
                 return ResourceManager.GetString("btn_Save", resourceCulture);
             }
@@ -72,16 +72,25 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
-        internal static string btn_Settings {
+        public static string btn_Settings {
             get {
                 return ResourceManager.GetString("btn_Settings", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred while retrieving data..
+        /// </summary>
+        public static string text_ErrorWhileRetrievingData {
+            get {
+                return ResourceManager.GetString("text_ErrorWhileRetrievingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Forecast.
         /// </summary>
-        internal static string text_Forecast {
+        public static string text_Forecast {
             get {
                 return ResourceManager.GetString("text_Forecast", resourceCulture);
             }
@@ -90,7 +99,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Humidity.
         /// </summary>
-        internal static string text_Humidity {
+        public static string text_Humidity {
             get {
                 return ResourceManager.GetString("text_Humidity", resourceCulture);
             }
@@ -99,7 +108,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to km/h.
         /// </summary>
-        internal static string text_km_h {
+        public static string text_km_h {
             get {
                 return ResourceManager.GetString("text_km_h", resourceCulture);
             }
@@ -108,7 +117,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Language.
         /// </summary>
-        internal static string text_language {
+        public static string text_language {
             get {
                 return ResourceManager.GetString("text_language", resourceCulture);
             }
@@ -117,7 +126,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to m/s.
         /// </summary>
-        internal static string text_m_s {
+        public static string text_m_s {
             get {
                 return ResourceManager.GetString("text_m_s", resourceCulture);
             }
@@ -126,7 +135,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to mmHg.
         /// </summary>
-        internal static string text_mmHg {
+        public static string text_mmHg {
             get {
                 return ResourceManager.GetString("text_mmHg", resourceCulture);
             }
@@ -135,7 +144,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Now.
         /// </summary>
-        internal static string text_Now {
+        public static string text_Now {
             get {
                 return ResourceManager.GetString("text_Now", resourceCulture);
             }
@@ -144,7 +153,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Pressure.
         /// </summary>
-        internal static string text_Pressure {
+        public static string text_Pressure {
             get {
                 return ResourceManager.GetString("text_Pressure", resourceCulture);
             }
@@ -153,7 +162,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Sunrise.
         /// </summary>
-        internal static string text_Sunrise {
+        public static string text_Sunrise {
             get {
                 return ResourceManager.GetString("text_Sunrise", resourceCulture);
             }
@@ -162,7 +171,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Sunset.
         /// </summary>
-        internal static string text_Sunset {
+        public static string text_Sunset {
             get {
                 return ResourceManager.GetString("text_Sunset", resourceCulture);
             }
@@ -171,7 +180,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Temperature.
         /// </summary>
-        internal static string text_Temperature {
+        public static string text_Temperature {
             get {
                 return ResourceManager.GetString("text_Temperature", resourceCulture);
             }
@@ -180,7 +189,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Today.
         /// </summary>
-        internal static string text_Today {
+        public static string text_Today {
             get {
                 return ResourceManager.GetString("text_Today", resourceCulture);
             }
@@ -189,16 +198,25 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Tomorrow.
         /// </summary>
-        internal static string text_Tomorrow {
+        public static string text_Tomorrow {
             get {
                 return ResourceManager.GetString("text_Tomorrow", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Town not found.
+        /// </summary>
+        public static string text_TownNotFound {
+            get {
+                return ResourceManager.GetString("text_TownNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Towns.
         /// </summary>
-        internal static string text_Towns {
+        public static string text_Towns {
             get {
                 return ResourceManager.GetString("text_Towns", resourceCulture);
             }
@@ -207,7 +225,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Weather.
         /// </summary>
-        internal static string text_weather {
+        public static string text_weather {
             get {
                 return ResourceManager.GetString("text_weather", resourceCulture);
             }
@@ -216,7 +234,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Wind.
         /// </summary>
-        internal static string text_Wind {
+        public static string text_Wind {
             get {
                 return ResourceManager.GetString("text_Wind", resourceCulture);
             }
@@ -225,7 +243,7 @@ namespace Weather.Resources.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Wind velocity.
         /// </summary>
-        internal static string text_WindVelocity {
+        public static string text_WindVelocity {
             get {
                 return ResourceManager.GetString("text_WindVelocity", resourceCulture);
             }

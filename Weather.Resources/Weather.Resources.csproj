@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\KMHtoMSConverter.cs" />
+    <Compile Include="Converters\DoubleToVisibilityConverter - Copy.cs" />
     <Compile Include="Converters\StringNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Converters\TimeToHHmmConverter.cs" />
     <Compile Include="Localizations\SettingsRes.Designer.cs">
@@ -108,10 +109,16 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localizations\SettingsRes.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>SettingsRes.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Localizations\SettingsRes.ru.resx" />
+    <EmbeddedResource Include="Localizations\SettingsRes.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingsRes.ru.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\WindDirectionIco.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

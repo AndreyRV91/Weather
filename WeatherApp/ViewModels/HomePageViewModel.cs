@@ -1,13 +1,13 @@
 ﻿using Caliburn.Micro;
 using NLog.Fluent;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Weather.Resources.Localizations;
 using WeatherApp.Contracts;
-using WeatherApp.Messages;
-using WeatherApp.Models.ProgramSettings;
+using WeatherApp.Core.Models.ProgramSettings;
+using WeatherApp.Properties;
 using WeatherLibrary;
 using WeatherLibrary.Models;
 
@@ -22,14 +22,15 @@ namespace WeatherApp.ViewModels
 
         public string TownName { get { return _townName; } set { Set(ref _townName, value); } }
         private string _townName;
+
         public int Temperature { get { return _temperature; } set { Set(ref _temperature, value); } }
         private int _temperature;
 
         public WeatherBase SelectedTown { get { return _selectedTown; } set { Set(ref _selectedTown, value); } }
         private WeatherBase _selectedTown;
 
-        public ObservableCollection<WeatherBase> WeatherList { get { return _weatherList; } set { Set(ref _weatherList, value); } }
-        private ObservableCollection<WeatherBase> _weatherList;
+        public BindableCollection<WeatherBase> WeatherList { get { return _weatherList; } set { Set(ref _weatherList, value); } }
+        private BindableCollection<WeatherBase> _weatherList;
 
         public WeatherParameters CurrentWeather { get { return _currentWeather; } set { Set(ref _currentWeather, value); } }
         private WeatherParameters _currentWeather;
@@ -55,7 +56,7 @@ namespace WeatherApp.ViewModels
         {
             _eventAggregator.Subscribe(this);
 
-            await UpdateTownList();
+            await UpdateTownList().ConfigureAwait(false);
 
             base.OnActivate();
         }
@@ -64,17 +65,25 @@ namespace WeatherApp.ViewModels
         {
             WeatherList?.Clear();
 
-            WeatherList = new ObservableCollection<WeatherBase>();
+            WeatherList = new BindableCollection<WeatherBase>();
 
             IsBusy = true;
-            WeatherList = await Task.Run(() => DataAccess.GetCurrentWeather());
+            WeatherList = await DataAccess.GetCurrentWeather().ConfigureAwait(false);
             IsBusy = false;
 
-            if (WeatherList.Any() && SelectedTown == null)
+            if (WeatherList != null && SelectedTown == null)
             {
                 SelectedTown = WeatherList.FirstOrDefault();
             }
-            UpdateWeather(SelectedTown);
+
+            if(WeatherList != null)
+            {
+                UpdateWeather(SelectedTown);
+            }
+            else
+            {
+                MessageBox.Show(SettingsRes.text_ErrorWhileRetrievingData);
+            }
         }
 
         public void UpdateWeather(WeatherBase selectedTown)
@@ -99,34 +108,33 @@ namespace WeatherApp.ViewModels
             }
         }
 
-        public async Task Search()
+        public async Task Search(string searchTownName)
         {
             if (WeatherList == null || SelectedTown == null)
             {
                 return;
             }
 
-            var searchResult = await Task.Run(() => DataAccess.GetCurrentWeather(TownName));
+            var searchResult = await DataAccess.GetCurrentWeather(searchTownName).ConfigureAwait(false);
 
             if (searchResult != null)
             {
-                if (WeatherList.FirstOrDefault(n => n.TownName == TownName) != null) //если уже есть в списке
+                var townFromList = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
+
+                if (townFromList == null)
                 {
-                    SelectedTown = SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
-                }
-                else //Если нет, то добавляем, но при условии, что города точно нет в нашем списке, т.к. внешний поиск может вестись на русском
-                {
-                    if (WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName) == null)
-                    {
-                        WeatherList.Add(searchResult);
-                    }
-                    SelectedTown = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
+                    WeatherList.Add(searchResult);
+                    townFromList = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
                 }
 
+                SelectedTown = townFromList;
+                TownName = townFromList.TownName;
+                CurrentWeather = townFromList.CurrentWeather;
+                WeatherToday = townFromList.WeatherToday;
             }
-            else //Если не нашли
+            else
             {
-                MessageBox.Show("Город не найден");
+                MessageBox.Show(SettingsRes.text_TownNotFound);
             }
         }
 

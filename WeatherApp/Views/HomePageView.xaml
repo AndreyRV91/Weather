@@ -16,6 +16,7 @@
             <converters:KMHtoMSConverter x:Key="KMHtoMSConverter"/>
             <converters:TimeToHHmmConverter x:Key="TimeToHHmmConverter"/>
             <converters:StringNullOrEmptyToVisibilityConverter x:Key="StringNullOrEmptyToVisibilityConverter"/>
+            <converters:DoubleToVisibilityConverter x:Key="DoubleToVisibilityConverter"/>
 
             <Style x:Key="RadioButtonStyle" TargetType="RadioButton">
                 <Setter Property="Template">
@@ -147,7 +148,14 @@
                     <Run Text="{lex:Loc text_mmHg}"/>
                     </TextBlock>
                     <TextBlock Style="{StaticResource WeatherHeader}" Text="{lex:Loc text_Wind}"/>
-                    <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding WindDirection}"/>
+                    <Border Width="15" Height="15" Margin="5 5 0 5" HorizontalAlignment="Left">
+                        <Image Source="/Weather.Resources;Component/Images/WindDirectionIco.png" RenderTransformOrigin="0.5 0.5" RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="{Binding WindDirection, Converter={StaticResource DoubleToVisibilityConverter} }">
+                            <Image.RenderTransform>
+                                <RotateTransform Angle="{Binding WindDirection}"/>
+                            </Image.RenderTransform>
+                        </Image>
+                    </Border>
                     <TextBlock Style="{StaticResource WeatherHeader}" Text="{lex:Loc text_WindVelocity}"/>
                     <TextBlock Style="{StaticResource WeatherProperty}">
                     <Run Text="{Binding WindVelocity, StringFormat={}{0:f1}}"/>
@@ -183,7 +191,14 @@
                     <Run Text="{lex:Loc text_mmHg}"/>
                     </TextBlock>
                     <TextBlock Style="{StaticResource WeatherHeader}" Text="{lex:Loc text_Wind}"/>
-                    <TextBlock Style="{StaticResource WeatherProperty}" Text="{Binding WindDirection}"/>
+                    <Border Width="15" Height="15" Margin="5 5 0 5" HorizontalAlignment="Left">
+                        <Image Source="/Weather.Resources;Component/Images/WindDirectionIco.png" RenderTransformOrigin="0.5 0.5"  RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="{Binding WindDirection, Converter={StaticResource DoubleToVisibilityConverter} }">
+                            <Image.RenderTransform>
+                                <RotateTransform Angle="{Binding WindDirection}"/>
+                            </Image.RenderTransform>
+                        </Image>
+                    </Border>
                     <TextBlock Style="{StaticResource WeatherHeader}" Text="{lex:Loc text_WindVelocity}"/>
                     <TextBlock Style="{StaticResource WeatherProperty}">
                     <Run Text="{Binding WindVelocity, StringFormat={}{0:f1}}"/>

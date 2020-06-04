@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using WeatherApp.Messages;
-using WeatherApp.Models.ProgramSettings;
+using WeatherApp.Core.Models.ProgramSettings;
 using WPFLocalizeExtension.Engine;
 
-namespace WeatherApp
+namespace WeatherApp.Core
 {
     public class LocalizationManager: PropertyChangedBase
     {
@@ -40,6 +39,8 @@ namespace WeatherApp
             }
         }
         LocCulture _currentCulture;
+
+        public static string CultureName { get => Instance.CurrentCulture.Culture.Name; }
 
         public void SetCultureAtStartUp()
         {

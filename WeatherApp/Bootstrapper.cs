@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using WeatherApp.Contracts;
-using WeatherApp.Models.ProgramSettings;
+using WeatherApp.Core;
+using WeatherApp.Core.Models.ProgramSettings;
 using WeatherApp.ViewModels;
 using WeatherLibrary;
 

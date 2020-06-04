@@ -17,6 +17,7 @@
                 <Setter Property="Padding" Value="0"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontSize" Value="18"/>
+                <Setter Property="CaretBrush" Value="White"/>
                 <Setter Property="TextWrapping" Value="NoWrap"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -102,7 +103,7 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Grid.Column="0" Style="{StaticResource IcoButtonBase}" Tag="{Binding RefreshIco}" cal:Message.Attach="UpdateTownList"/>
                 <Button Grid.Column="0" Style="{StaticResource IcoButtonBase}" Tag="{Binding SunMoonIco}" cal:Message.Attach="ChangeTheme"/>
-                <TextBox Style="{StaticResource SearchTextBox}" Text="{Binding TownName, Mode=OneWayToSource}"/>
+                <TextBox Style="{StaticResource SearchTextBox}" Text="{Binding SearchTownName, Mode=OneWayToSource}"/>
             </StackPanel>
         </Grid>
 

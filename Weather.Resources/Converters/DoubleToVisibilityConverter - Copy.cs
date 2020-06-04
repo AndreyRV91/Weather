@@ -6,13 +6,11 @@ using System.Windows.Data;
 namespace Weather.Resources.Converters
 {
 
-    public class StringNullOrEmptyToVisibilityConverter:IValueConverter
+    public class DoubleToVisibilityConverter:IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string val = value?.ToString();
-            return string.IsNullOrEmpty(val)
-                ? Visibility.Hidden : Visibility.Visible;
+            return (double)value == default? Visibility.Hidden : Visibility.Visible;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

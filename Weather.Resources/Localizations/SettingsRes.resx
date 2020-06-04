@@ -154,4 +154,10 @@
   <data name="btn_Save" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="text_TownNotFound" xml:space="preserve">
+    <value>Town not found</value>
+  </data>
+  <data name="text_ErrorWhileRetrievingData" xml:space="preserve">
+    <value>An error occurred while retrieving data.</value>
+  </data>
 </root>
