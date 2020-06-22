@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using NLog.Fluent;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,12 @@ namespace WeatherApp.ViewModels
 
         public string SearchTownName { get { return _searchTownName; } set { Set(ref _searchTownName, value); } }
         private string _searchTownName;
+
+        public HomePageViewModel HomePageVM { get => _homePageVM = _homePageVM ?? IoC.Get<HomePageViewModel>(); }
+        private HomePageViewModel _homePageVM;
+
+        public SettingsViewModel SettingsVM { get => _settingsVM = _settingsVM ?? IoC.Get<SettingsViewModel>(); }
+        private SettingsViewModel _settingsVM;
         #endregion
 
         public MainWindowViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator, IProgramSettings programSettings)
@@ -64,14 +71,12 @@ namespace WeatherApp.ViewModels
 
         public void OpenSettings()
         {
-            var vm = IoC.Get<SettingsViewModel>();
-            ActivateItem(vm);
+            ActivateItem(SettingsVM);
         }
 
         public void OpenHomePage()
         {
-            var vm = IoC.Get<HomePageViewModel>();
-            ActivateItem(vm);
+            ActivateItem(HomePageVM);
         }
 
         protected override void OnDeactivate(bool close)
@@ -80,22 +85,36 @@ namespace WeatherApp.ViewModels
             base.OnDeactivate(close);
         }
 
-        public async Task Search()
+        public async void Search()
         {
             var vm = ActiveItem as HomePageViewModel;
 
             if (vm != null)
             {
-                await vm.Search(SearchTownName);
+                try
+                {
+                    await vm.Search(SearchTownName);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
             }
         }        
         
-        public async Task UpdateTownList()
+        public async void UpdateTownList()
         {
             var vm = ActiveItem as HomePageViewModel;
             if (vm != null)
             {
-                await vm.UpdateTownList();
+                try
+                {
+                    await vm.UpdateTownList();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
             }
         }
 

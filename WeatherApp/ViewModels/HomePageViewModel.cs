@@ -56,7 +56,14 @@ namespace WeatherApp.ViewModels
         {
             _eventAggregator.Subscribe(this);
 
-            await UpdateTownList().ConfigureAwait(false);
+            try
+            {
+                await UpdateTownList().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
 
             base.OnActivate();
         }
