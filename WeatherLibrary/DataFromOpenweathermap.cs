@@ -33,7 +33,7 @@ namespace WeatherLibrary
 
         private enum CNT { todayWeather = 1 }
 
-        private static readonly Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public async Task<BindableCollection<WeatherBase>> GetCurrentWeather() //Using for update weather
         {
@@ -131,7 +131,7 @@ namespace WeatherLibrary
             }
             catch (Exception ex)
             {
-                logger.Error(ex.ToString(), "Error while converting data ");
+                _logger.Error(ex.ToString(), "Error while converting data ");
                 throw;
             }
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using WeatherApp.Core;
 using WeatherApp.Core.Models.ProgramSettings;
 using WeatherApp.ViewModels;
-using WeatherApp.Views;
 using WeatherLibrary;
 
 namespace Weather.Test

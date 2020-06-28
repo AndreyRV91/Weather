@@ -2,12 +2,10 @@
 using NLog.Fluent;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using WeatherApp.Contracts;
 using WeatherApp.Core.Messages;
 using WeatherApp.Core.Models.ProgramSettings;
-using WeatherLibrary;
 using static WeatherApp.Core.Models.Enums;
 
 namespace WeatherApp.ViewModels
