@@ -13,7 +13,7 @@ namespace WeatherApp
 {
     public class Bootstrapper: BootstrapperBase
     {
-        SimpleContainer container = new SimpleContainer();
+        SimpleContainer _container = new SimpleContainer();
 
         public Bootstrapper()
         {
@@ -22,53 +22,54 @@ namespace WeatherApp
 
         protected override void Configure()
         {
-            container.Instance(container);
+            _container.Instance(_container);
 
-            container.Singleton<IWindowManager, WindowManager>();
-            container.Singleton<IEventAggregator, EventAggregator>();
-            container.Singleton<IMenuPage, SettingsViewModel>();
-            container.Singleton<IMenuPage, HomePageViewModel>();
+            _container.Singleton<IWindowManager, WindowManager>();
+            _container.Singleton<IEventAggregator, EventAggregator>();
+            _container.Singleton<IMenuPage, SettingsViewModel>();
+            _container.Singleton<IMenuPage, HomePageViewModel>();
 
-            container
+            _container
                 .PerRequest<IDataAccess, DataFromOpenweathermap>();
 
             var settings = new ProgramSettings();
 
-            container.Instance<IProgramSettings>(settings);
+            _container.Instance<IProgramSettings>(settings);
 
             GetType().Assembly.GetTypes().
                 Where(type => type.IsClass)
                 .Where(type => type.Name.EndsWith("ViewModel"))
                 .ToList()
-                .ForEach(viewModelType => container.RegisterPerRequest(
+                .ForEach(viewModelType => _container.RegisterPerRequest(
                     viewModelType, viewModelType.ToString(), viewModelType));
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            var settings = (ProgramSettings)container.GetInstance<IProgramSettings>();
+            var settings = (ProgramSettings)_container.GetInstance<IProgramSettings>();
             if(!settings.LoadSettings())
             {
                 settings.SetDefault();
+                settings.SaveSettings();
             }
-            LocalizationManager.Instance.SetCultureAtStartUp();
+            LocalizationManager.Instance.SetCultureAtStartUp(settings);
 
             DisplayRootViewFor<MainWindowViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
         {
-            return container.GetInstance(service, key);
+            return _container.GetInstance(service, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return container.GetAllInstances(service);
+            return _container.GetAllInstances(service);
         }
 
         protected override void BuildUp(object instance)
         {
-            container.BuildUp(instance);
+            _container.BuildUp(instance);
         }
     }
 }

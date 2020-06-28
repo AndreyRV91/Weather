@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Weather.Resources.Localizations;
 using WeatherApp.Contracts;
-using WeatherApp.Core.Models.ProgramSettings;
-using WeatherApp.Properties;
 using WeatherLibrary;
 using WeatherLibrary.Models;
 
@@ -46,7 +44,7 @@ namespace WeatherApp.ViewModels
 
         #endregion
 
-        public HomePageViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator, IProgramSettings programSettings)
+        public HomePageViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator)
         {
             this.DataAccess = DataAccess;
             _eventAggregator = eventAggregator;
@@ -55,6 +53,8 @@ namespace WeatherApp.ViewModels
         protected override async void OnActivate()
         {
             _eventAggregator.Subscribe(this);
+
+            WeatherList = new BindableCollection<WeatherBase>();
 
             try
             {
@@ -72,19 +72,13 @@ namespace WeatherApp.ViewModels
         {
             WeatherList?.Clear();
 
-            WeatherList = new BindableCollection<WeatherBase>();
-
             IsBusy = true;
             WeatherList = await DataAccess.GetCurrentWeather().ConfigureAwait(false);
             IsBusy = false;
 
-            if (WeatherList != null && SelectedTown == null)
+            if (WeatherList != null)
             {
                 SelectedTown = WeatherList.FirstOrDefault();
-            }
-
-            if(WeatherList != null)
-            {
                 UpdateWeather(SelectedTown);
             }
             else

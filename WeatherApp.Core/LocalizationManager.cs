@@ -10,7 +10,7 @@ namespace WeatherApp.Core
 {
     public class LocalizationManager: PropertyChangedBase
     {
-        private readonly IProgramSettings _programSettings;
+        private IProgramSettings _programSettings;
 
         public List<LocCulture> CultureList
         {
@@ -42,8 +42,9 @@ namespace WeatherApp.Core
 
         public static string CultureName { get => Instance.CurrentCulture.Culture.Name; }
 
-        public void SetCultureAtStartUp()
+        public void SetCultureAtStartUp(IProgramSettings programSettings)
         {
+            _programSettings = programSettings;
             var culFromS = _programSettings.Culture ?? CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
             var cul = Instance.CultureList.FirstOrDefault(c => c.Culture.Name == culFromS);
             if (cul != null)
@@ -80,7 +81,7 @@ namespace WeatherApp.Core
         {
                 if (Instance.CurrentCulture == null)
                 {
-                    SetCultureAtStartUp();
+                    SetCultureAtStartUp(_programSettings);
                     return;
                 }
 
@@ -92,7 +93,7 @@ namespace WeatherApp.Core
         #region Singleton
         public static volatile LocalizationManager _instance;
         private static readonly object threadLock = new object();
-        private LocalizationManager() { _programSettings = IoC.Get<IProgramSettings>(); }
+        private LocalizationManager() {}
         public static LocalizationManager Instance
         {
             get

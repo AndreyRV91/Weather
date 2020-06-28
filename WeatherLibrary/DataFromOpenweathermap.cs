@@ -21,8 +21,6 @@ namespace WeatherLibrary
 
         string[] CountryIdList = { "4740157", "564723", "564487",  "3201984", "524901" }; //just random town list
 
-        string lng = LocalizationManager.CultureName;
-
         string jsonResultText;
         JToken townNameToken;
         JToken temperatureToken;
@@ -45,7 +43,7 @@ namespace WeatherLibrary
             {
                 for (int i = 0; i < CountryIdList.Length; i++)
                 {
-                    WeatherBase weather = await GetInformationFromWeb($"?id={CountryIdList[i]}&lang={lng}").ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
+                    WeatherBase weather = await GetInformationFromWeb($"?id={CountryIdList[i]}").ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
                     weatherList.Add(weather);
                 }
             }
@@ -60,6 +58,7 @@ namespace WeatherLibrary
         public async Task<WeatherBase> GetCurrentWeather(string townName)//Using for town name search
         {
             WeatherBase weather;
+            string lng = LocalizationManager.CultureName;
 
             try
             {
@@ -76,12 +75,13 @@ namespace WeatherLibrary
         private async Task<WeatherBase> GetInformationFromWeb(string path) //request for today's weather forecast
         {
             WeatherBase weather = new WeatherBase();
+            string lng = LocalizationManager.CultureName;
             HttpResponseMessage response = new HttpResponseMessage();
             JObject jsonResult = new JObject();
 
             try
             {
-                response = await Http.GetAsync($"{BASE_ADDRESS}weather{path}&appid={APPID}&units=metric").ConfigureAwait(false);
+                response = await Http.GetAsync($"{BASE_ADDRESS}weather{path}&appid={APPID}&units=metric&lang={lng}").ConfigureAwait(false);
 
                 jsonResultText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 jsonResult = JObject.Parse(jsonResultText);
@@ -104,7 +104,7 @@ namespace WeatherLibrary
                 weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
 
 
-                response = await Http.GetAsync($"{BASE_ADDRESS}forecast{path}&appid={APPID}&cnt={(int)CNT.todayWeather}&units=metric").ConfigureAwait(false);
+                response = await Http.GetAsync($"{BASE_ADDRESS}forecast{path}&appid={APPID}&cnt={(int)CNT.todayWeather}&units=metric&lang={lng}").ConfigureAwait(false);
 
                 jsonResultText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 jsonResult = JObject.Parse(jsonResultText);

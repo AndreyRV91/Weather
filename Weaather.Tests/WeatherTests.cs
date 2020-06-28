@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WeatherLibrary;
-using Weather;
-using Weather.ViewModels;
-using System.Windows;
-using NUnit.Framework;
-using System.Collections.ObjectModel;
 
 namespace Weather.Tests
 {
@@ -153,7 +147,6 @@ namespace Weather.Tests
             //Проверяем, что найден город "Тула" и выделение в DataGrid перемещено в SelectedTown
             Assert.AreEqual("Tula", viewModel.SelectedTown.TownName);
         }
-
 
     }
 }

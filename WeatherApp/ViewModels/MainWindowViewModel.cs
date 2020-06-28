@@ -32,19 +32,15 @@ namespace WeatherApp.ViewModels
         public string SearchTownName { get { return _searchTownName; } set { Set(ref _searchTownName, value); } }
         private string _searchTownName;
 
-        public HomePageViewModel HomePageVM { get => _homePageVM = _homePageVM ?? IoC.Get<HomePageViewModel>(); }
-        private HomePageViewModel _homePageVM;
-
-        public SettingsViewModel SettingsVM { get => _settingsVM = _settingsVM ?? IoC.Get<SettingsViewModel>(); }
-        private SettingsViewModel _settingsVM;
         #endregion
 
-        public MainWindowViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator, IProgramSettings programSettings)
+        public MainWindowViewModel(IEventAggregator eventAggregator, IProgramSettings programSettings)
         {
             _programSettings = programSettings;
             _eventAggregator = eventAggregator;
 
             SetTheme(_programSettings.Theme);
+
             OpenHomePage();
         }
 
@@ -71,12 +67,14 @@ namespace WeatherApp.ViewModels
 
         public void OpenSettings()
         {
-            ActivateItem(SettingsVM);
+            var _settingsVM = IoC.Get<SettingsViewModel>();
+            ActivateItem(_settingsVM);
         }
 
         public void OpenHomePage()
         {
-            ActivateItem(HomePageVM);
+            var _homePageVM = IoC.Get<HomePageViewModel>();
+            ActivateItem(_homePageVM);
         }
 
         protected override void OnDeactivate(bool close)
@@ -105,6 +103,7 @@ namespace WeatherApp.ViewModels
         public async void UpdateTownList()
         {
             var vm = ActiveItem as HomePageViewModel;
+
             if (vm != null)
             {
                 try
@@ -124,7 +123,7 @@ namespace WeatherApp.ViewModels
             var resources = Application.Current.Resources;
             Uri oldTheme = null;
 
-            switch (_programSettings.Theme)
+            switch (theme)
             {
                 case (int)ThemeEnum.LightTheme:
                     ThemeResourceDictionary.Source = LightTheme;

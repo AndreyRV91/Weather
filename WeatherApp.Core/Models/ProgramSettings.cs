@@ -43,7 +43,7 @@ namespace WeatherApp.Core.Models.ProgramSettings
         public void SetDefault()
         {
             Theme = 1;
-            SaveSettings();
+            Culture = "ru";
         }
 
         public bool LoadSettings()
