@@ -7,8 +7,8 @@ namespace WeatherApp.Core.Infrastructure
 {
     public static class Http
     {
-        private static readonly HttpClient client = new HttpClient();
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly HttpClient _client = new HttpClient();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<HttpResponseMessage> GetAsync(string request)
         {
@@ -16,12 +16,12 @@ namespace WeatherApp.Core.Infrastructure
 
             try
             {
-                response = await client.GetAsync(request);
+                response = await _client.GetAsync(request);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ee)
             {
-                logger.Error(ee, "Response error");
+                _logger.Error(ee, "Response error");
                 throw;
             }
 

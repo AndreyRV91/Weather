@@ -1,20 +1,28 @@
 ﻿using Caliburn.Micro;
-using NLog.Fluent;
+using NLog;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Weather.Resources.Localizations;
 using WeatherApp.Contracts;
-using WeatherLibrary;
-using WeatherLibrary.Models;
+using WeatherApp.Core;
+using WeatherApp.Core.Infrastructure;
+using WeatherApp.Core.Models;
 
 namespace WeatherApp.ViewModels
 {
     public class HomePageViewModel : Screen, IMenuPage
     {
-        private readonly IDataAccess DataAccess;
+        private readonly IDataAccess _dataAccess;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ITownsRepository _townsRepository;
+
+        private static readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private bool IsInited;
 
         #region Properties
 
@@ -36,6 +44,17 @@ namespace WeatherApp.ViewModels
         public WeatherParameters WeatherToday { get { return _weatherToday; } set { Set(ref _weatherToday, value); } }
         private WeatherParameters _weatherToday;
 
+        public IEnumerable<string> townsList 
+        { 
+            get 
+            {
+                foreach (var item in WeatherList)
+                {
+                    yield return item.TownName;
+                }
+            }
+        }
+
         public bool IsStretchedMenu { get { return _isStretchedMenu; } set { Set(ref _isStretchedMenu, value); } }
         private bool _isStretchedMenu;
 
@@ -44,41 +63,69 @@ namespace WeatherApp.ViewModels
 
         #endregion
 
-        public HomePageViewModel(IDataAccess DataAccess, IEventAggregator eventAggregator)
+        public HomePageViewModel(IDataAccess dataAccess, IEventAggregator eventAggregator, ITownsRepository townsRepository)
         {
-            this.DataAccess = DataAccess;
+            _dataAccess = dataAccess;
             _eventAggregator = eventAggregator;
+            _townsRepository = townsRepository;
         }
 
         protected override async void OnActivate()
         {
             _eventAggregator.Subscribe(this);
 
-            WeatherList = new BindableCollection<WeatherBase>();
+            await Init().ConfigureAwait(false);
 
-            try
-            {
-                await UpdateTownList().ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.ToString());
-            }
+            IsInited = true;
 
             base.OnActivate();
         }
 
+        private async Task Init()
+        {
+            WeatherList = new BindableCollection<WeatherBase>();
+
+            await UpdateTownList();
+        }
+
         public async Task UpdateTownList()
         {
-            WeatherList?.Clear();
+            var list = new List<WeatherBase>();
+            IEnumerable<string> towns;
 
-            IsBusy = true;
-            WeatherList = await DataAccess.GetCurrentWeather().ConfigureAwait(false);
-            IsBusy = false;
-
-            if (WeatherList != null)
+            if(IsInited)
             {
-                SelectedTown = WeatherList.FirstOrDefault();
+                towns = townsList;
+            }
+            else
+            {
+                towns = _townsRepository.LoadTownsList();
+            }
+
+            try
+            {
+                IsBusy = true;
+                list = await _dataAccess.GetWeatherList(towns).ConfigureAwait(false);
+                IsBusy = false;
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(SettingsRes.text_ErrorWhileRetrievingData);
+                _logger.Error(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.ToString());
+            }
+
+            WeatherList = new BindableCollection<WeatherBase>(list);
+
+            if (WeatherList.Any())
+            {
+                if(!IsInited)
+                {
+                    SelectedTown = WeatherList.FirstOrDefault();
+                }
                 UpdateWeather(SelectedTown);
             }
             else
@@ -89,7 +136,7 @@ namespace WeatherApp.ViewModels
 
         public void UpdateWeather(WeatherBase selectedTown)
         {
-            if (WeatherList == null || SelectedTown == null || WeatherList.Count == 0)
+            if (WeatherList == null || selectedTown == null || WeatherList.Count == 0)
             {
                 return;
             }
@@ -105,7 +152,7 @@ namespace WeatherApp.ViewModels
             }
             catch (Exception ex)
             {
-                Log.Error(ex.ToString());
+                _logger.Error(ex.ToString());
             }
         }
 
@@ -116,7 +163,7 @@ namespace WeatherApp.ViewModels
                 return;
             }
 
-            var searchResult = await DataAccess.GetCurrentWeather(searchTownName).ConfigureAwait(false);
+            var searchResult = await _dataAccess.SearchTownWeather(searchTownName).ConfigureAwait(false);
 
             if (searchResult != null)
             {
@@ -125,6 +172,9 @@ namespace WeatherApp.ViewModels
                 if (townFromList == null)
                 {
                     WeatherList.Add(searchResult);
+                    
+                    _townsRepository.SaveTownsList(townsList);
+
                     townFromList = WeatherList.FirstOrDefault(n => n.TownName == searchResult.TownName);
                 }
 
@@ -139,8 +189,20 @@ namespace WeatherApp.ViewModels
             }
         }
 
+        public void RemoveTown()
+        {
+            WeatherList.Remove(SelectedTown);
+            SelectedTown = WeatherList.FirstOrDefault();
+            UpdateWeather(SelectedTown);
+
+            _townsRepository.SaveTownsList(townsList);
+        }
+
         protected override void OnDeactivate(bool close)
         {
+            IsInited = false;
+            _townsRepository.SaveTownsList(townsList);
+            WeatherList?.Clear();
             _eventAggregator.Unsubscribe(this);
             base.OnDeactivate(close);
         }

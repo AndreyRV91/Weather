@@ -160,4 +160,7 @@
   <data name="text_ErrorWhileRetrievingData" xml:space="preserve">
     <value>An error occurred while retrieving data.</value>
   </data>
+  <data name="btn_RemoveTown" xml:space="preserve">
+    <value>Remove town</value>
+  </data>
 </root>

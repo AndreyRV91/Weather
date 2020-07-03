@@ -1,5 +1,4 @@
-﻿using Caliburn.Micro;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using WeatherApp.Core;
 using WeatherApp.Core.Infrastructure;
-using WeatherLibrary.Models;
+using WeatherApp.Core.Models;
 
 namespace WeatherLibrary
 {
@@ -18,8 +17,6 @@ namespace WeatherLibrary
         const string APPID = "8afa526a19c42cc1d31ad0688de135f7";
 
         const double MMHG = 1.333;
-
-        string[] CountryIdList = { "4740157", "564723", "564487",  "3201984", "524901" }; //just random town list
 
         string jsonResultText;
         JToken townNameToken;
@@ -31,20 +28,20 @@ namespace WeatherLibrary
         JToken sunriseToken;
         JToken sunsetToken;
 
-        private enum CNT { todayWeather = 1 }
+        private enum CNT { tomorrowWeather=2 }
 
         private static readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public async Task<BindableCollection<WeatherBase>> GetCurrentWeather() //Using for update weather
+        public async Task<List<WeatherBase>> GetWeatherList(IEnumerable<string> townsList) //Using for update weather
         {
-            var weatherList = new BindableCollection<WeatherBase>();
+            var weatherList = new List<WeatherBase>();
 
             try
             {
-                for (int i = 0; i < CountryIdList.Length; i++)
+                foreach (var town in townsList)
                 {
-                    WeatherBase weather = await GetInformationFromWeb($"?id={CountryIdList[i]}").ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
-                    weatherList.Add(weather);
+                    WeatherBase weather = await GetInformationFromWeb($"?q={town}").ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
+                    weatherList.Add(weather); 
                 }
             }
             catch
@@ -55,14 +52,13 @@ namespace WeatherLibrary
             return weatherList;
         }
 
-        public async Task<WeatherBase> GetCurrentWeather(string townName)//Using for town name search
+        public async Task<WeatherBase> SearchTownWeather(string townName)//Using for town name search
         {
             WeatherBase weather;
-            string lng = LocalizationManager.CultureName;
 
             try
             {
-                weather = await GetInformationFromWeb($"?q={townName}&lang={lng}").ConfigureAwait(false);
+                weather = await GetInformationFromWeb($"?q={townName}").ConfigureAwait(false);
             }
             catch
             {
@@ -100,22 +96,22 @@ namespace WeatherLibrary
                 weather.CurrentWeather.WindDirection = windDirectionToken != null? (double)(windDirectionToken): 0 ;
                 weather.CurrentWeather.WindVelocity = (double)(windVelocityToken);
                 weather.CurrentWeather.Humidity = (int)(humidityToken);
-                weather.CurrentWeather.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
-                weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
+                weather.CurrentWeather.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString())).ToLocalTime();
+                weather.CurrentWeather.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString())).ToLocalTime();
 
 
-                response = await Http.GetAsync($"{BASE_ADDRESS}forecast{path}&appid={APPID}&cnt={(int)CNT.todayWeather}&units=metric&lang={lng}").ConfigureAwait(false);
+                response = await Http.GetAsync($"{BASE_ADDRESS}forecast{path}&appid={APPID}&cnt={(int)CNT.tomorrowWeather}&units=metric&lang={lng}").ConfigureAwait(false);
 
                 jsonResultText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 jsonResult = JObject.Parse(jsonResultText);
 
                 IList<JToken> results = jsonResult["list"].Children().ToList();
 
-                pressureToken = results[0]["main"]["pressure"];
-                temperatureToken = results[0]["main"]["temp"];
-                windDirectionToken = results[0]["wind"]["deg"];
-                windVelocityToken = results[0]["wind"]["speed"];
-                humidityToken = results[0]["main"]["humidity"];
+                pressureToken = results[1]["main"]["pressure"];
+                temperatureToken = results[1]["main"]["temp"];
+                windDirectionToken = results[1]["wind"]["deg"];
+                windVelocityToken = results[1]["wind"]["speed"];
+                humidityToken = results[1]["main"]["humidity"];
                 sunriseToken = jsonResult["city"]["sunrise"];
                 sunsetToken = jsonResult["city"]["sunset"];
 
@@ -125,8 +121,8 @@ namespace WeatherLibrary
                 weather.WeatherToday.WindDirection = windDirectionToken != null ? (double)(windDirectionToken) : 0;
                 weather.WeatherToday.WindVelocity = (double)(windVelocityToken);
                 weather.WeatherToday.Humidity = (int)(humidityToken);
-                weather.WeatherToday.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString()));
-                weather.WeatherToday.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString()));
+                weather.WeatherToday.Sunrise = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunriseToken.ToString())).ToLocalTime();
+                weather.WeatherToday.Sunset = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(Convert.ToDouble(sunsetToken.ToString())).ToLocalTime();
 
             }
             catch (Exception ex)

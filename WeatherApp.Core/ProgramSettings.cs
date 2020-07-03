@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -18,6 +19,8 @@ namespace WeatherApp.Core.Models.ProgramSettings
         public string Culture { get; set; }
 
         public int Theme { get; set; }
+
+        private static readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         private string GetFilePath()
         {
@@ -56,11 +59,18 @@ namespace WeatherApp.Core.Models.ProgramSettings
             {
                 var formatter = new XmlSerializer(typeof(UserSettings));
 
-                using (FileStream fs = new FileStream(GetFilePath(), FileMode.OpenOrCreate))
+                try
                 {
-                    var settings = (UserSettings)formatter.Deserialize(fs);
-                    Culture = settings.Culture;
-                    Theme = settings.Theme;
+                    using (FileStream fs = new FileStream(GetFilePath(), FileMode.OpenOrCreate))
+                    {
+                        var settings = (UserSettings)formatter.Deserialize(fs);
+                        Culture = settings.Culture;
+                        Theme = settings.Theme;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex);
                 }
                 return true;
             }
@@ -76,9 +86,16 @@ namespace WeatherApp.Core.Models.ProgramSettings
 
             var formatter = new XmlSerializer(typeof(UserSettings));
 
-            using (FileStream fs = new FileStream(GetFilePath(), FileMode.OpenOrCreate))
+            try
             {
-                formatter.Serialize(fs, UserSettings);
+                using (FileStream fs = new FileStream(GetFilePath(), FileMode.OpenOrCreate))
+                {
+                    formatter.Serialize(fs, UserSettings);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
     }

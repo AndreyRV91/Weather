@@ -1,12 +1,12 @@
 ﻿using Caliburn.Micro;
-using NLog.Fluent;
+using NLog;
 using System;
 using System.Linq;
 using System.Windows;
 using WeatherApp.Contracts;
-using WeatherApp.Core.Messages;
+using WeatherApp.Core.Infrastructure;
 using WeatherApp.Core.Models.ProgramSettings;
-using static WeatherApp.Core.Models.Enums;
+using static WeatherApp.Core.Infrastructure.Enums;
 
 namespace WeatherApp.ViewModels
 {
@@ -15,6 +15,8 @@ namespace WeatherApp.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IProgramSettings _programSettings;
+
+        private static readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         #region Properties
 
@@ -93,7 +95,7 @@ namespace WeatherApp.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.ToString());
+                    _logger.Error(ex.ToString());
                 }
             }
         }        
@@ -110,7 +112,7 @@ namespace WeatherApp.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.ToString());
+                    _logger.Error(ex.ToString());
                 }
             }
         }

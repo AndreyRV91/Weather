@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using WeatherApp.Contracts;
 using WeatherApp.Core;
+using WeatherApp.Core.Infrastructure;
 using WeatherApp.Core.Models.ProgramSettings;
 using WeatherApp.ViewModels;
 using WeatherLibrary;
@@ -26,6 +27,7 @@ namespace WeatherApp
 
             _container.Singleton<IWindowManager, WindowManager>();
             _container.Singleton<IEventAggregator, EventAggregator>();
+            _container.Singleton<ITownsRepository, TownsRepository>();
             _container.Singleton<IMenuPage, SettingsViewModel>();
             _container.Singleton<IMenuPage, HomePageViewModel>();
 

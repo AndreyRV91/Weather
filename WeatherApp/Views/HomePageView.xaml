@@ -75,15 +75,20 @@
             <Style x:Key="ListBoxStyle" TargetType="ListBox">
                 <Setter Property="Width" Value="300"/>
                 <Setter Property="Height" Value="210"/>
+                <Setter Property="Visibility" Value="Hidden"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBox">
                             <ScrollViewer>
                                 <Grid >
                                     <StackPanel IsItemsHost="True"/>
-                                    <Control Style="{StaticResource BusyIndicator}"/>
                                 </Grid>
                             </ScrollViewer>
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsBusy}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
@@ -114,9 +119,13 @@
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="30">
             <TextBlock FontSize="18" Foreground="White" Text="{lex:Loc text_Towns}"/>
             <Separator/>
-            <ListBox  Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding WeatherList}"
+            <Grid>
+                <ListBox  Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding WeatherList}"
                               ItemTemplate="{StaticResource ListBoxItemTemplate}" ItemContainerStyle="{StaticResource ItemContainerStyle}"
                               cal:Message.Attach="[Event SelectionChanged] = [Action UpdateWeather($this)]"/>
+                <Control Style="{StaticResource BusyIndicator}"/>
+            </Grid>
+            <Button Style="{StaticResource ButtonBase}" cal:Message.Attach="RemoveTown" Content="{lex:Loc btn_RemoveTown}" HorizontalAlignment="Left" Width="150" Margin="0 20"/>
         </StackPanel>
 
         <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">

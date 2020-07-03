@@ -1,6 +1,6 @@
 ﻿using Caliburn.Micro;
 
-namespace WeatherApp.Core.Messages
+namespace WeatherApp.Core.Infrastructure
 {
     public class ChangeTheme:PropertyChangedBase
     {

@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WeatherApp.Core;
+using WeatherApp.Core.Infrastructure;
 using WeatherApp.Core.Models.ProgramSettings;
 using WeatherApp.ViewModels;
 using WeatherLibrary;
@@ -15,6 +16,7 @@ namespace Weather.Test
     {
         IProgramSettings _settings;
         IEventAggregator _eventAggregator;
+        ITownsRepository _townsRepository;
 
         [SetUp]
         public void SetUp()
@@ -23,8 +25,9 @@ namespace Weather.Test
             _settings.SetDefault();
             LocalizationManager.Instance.SetCultureAtStartUp(_settings);
 
-
             _eventAggregator = new EventAggregator();
+
+
         }
 
         [Test]
@@ -34,7 +37,7 @@ namespace Weather.Test
             IDataAccess DataFromOpenweathermap = new DataFromOpenweathermap();
 
             //Act
-            var data = await DataFromOpenweathermap.GetCurrentWeather();
+            var data = await DataFromOpenweathermap.GetWeatherList(new System.Collections.Generic.List<string>());
 
 
             //Assert
@@ -65,7 +68,7 @@ namespace Weather.Test
             IDataAccess DataFromOpenweathermap = new DataFromOpenweathermap();
 
             //Act
-            var item = await DataFromOpenweathermap.GetCurrentWeather("Moscow");
+            var item = await DataFromOpenweathermap.SearchTownWeather("Moscow");
 
 
             //Assert
@@ -92,7 +95,7 @@ namespace Weather.Test
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            var homePageVM = new HomePageViewModel(mockWeather, _eventAggregator);
+            var homePageVM = new HomePageViewModel(mockWeather, _eventAggregator, _townsRepository);
 
             //Act
             await homePageVM.UpdateTownList();
@@ -106,7 +109,7 @@ namespace Weather.Test
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            var homePageVM = new HomePageViewModel(mockWeather, _eventAggregator);
+            var homePageVM = new HomePageViewModel(mockWeather, _eventAggregator, _townsRepository);
 
             //Act
             await homePageVM.UpdateTownList();
@@ -121,7 +124,7 @@ namespace Weather.Test
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
-            var homePageVM = new HomePageViewModel(mockWeather, _eventAggregator);
+            var homePageVM = new HomePageViewModel(mockWeather, _eventAggregator, _townsRepository);
 
             //Act
             await homePageVM.UpdateTownList();

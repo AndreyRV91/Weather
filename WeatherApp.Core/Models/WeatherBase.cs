@@ -1,5 +1,8 @@
-﻿namespace WeatherLibrary.Models
+﻿using System;
+
+namespace WeatherApp.Core.Models
 {
+    [Serializable]
     public class WeatherBase
     {
         public string TownName { get; set; }

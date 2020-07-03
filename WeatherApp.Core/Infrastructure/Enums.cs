@@ -1,5 +1,5 @@
 ﻿
-namespace WeatherApp.Core.Models
+namespace WeatherApp.Core.Infrastructure
 {
     public class Enums
     {

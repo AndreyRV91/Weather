@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace WeatherLibrary.Models
+namespace WeatherApp.Core.Models
 {
+    [Serializable]
     public class WeatherParameters
     {
         public int Pressure { get; set; }

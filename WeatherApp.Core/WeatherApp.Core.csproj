@@ -70,12 +70,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\IDataAccess.cs" />
     <Compile Include="Infrastructure\Http.cs" />
+    <Compile Include="Contracts\ITownsRepository.cs" />
     <Compile Include="LocalizationManager.cs" />
-    <Compile Include="Messages.cs" />
-    <Compile Include="Models\Enums.cs" />
-    <Compile Include="Models\ProgramSettings.cs" />
+    <Compile Include="Infrastructure\Messages.cs" />
+    <Compile Include="Infrastructure\Enums.cs" />
+    <Compile Include="Models\WeatherBase.cs" />
+    <Compile Include="Models\WeatherParameters.cs" />
+    <Compile Include="ProgramSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TownsRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -96,8 +101,6 @@
       <Name>Weather.Resources</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\ProgramSettings\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

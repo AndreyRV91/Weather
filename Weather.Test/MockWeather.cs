@@ -1,18 +1,16 @@
-﻿using Caliburn.Micro;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using WeatherLibrary;
-using WeatherLibrary.Models;
+using WeatherApp.Core;
+using WeatherApp.Core.Models;
 
 namespace Weather.Test
 {
 
     public class MockWeather : IDataAccess
     {
-        BindableCollection<WeatherBase> mockWeatherList;
+        List<WeatherBase> mockWeatherList;
         WeatherBase MockWeatherInMoscow;
         WeatherBase MockWeatherInTula;
 
@@ -21,7 +19,7 @@ namespace Weather.Test
             MockWeatherInMoscow = new WeatherBase();
             MockWeatherInTula = new WeatherBase();
 
-            mockWeatherList = new BindableCollection<WeatherBase>();
+            mockWeatherList = new List<WeatherBase>();
 
             MockWeatherInMoscow.TownName = "Moscow";
             MockWeatherInMoscow.CurrentWeather.Humidity = 50;
@@ -55,12 +53,12 @@ namespace Weather.Test
             mockWeatherList.Add(MockWeatherInTula);
         }
 
-        public async Task<BindableCollection<WeatherBase>> GetCurrentWeather()
+        public async Task<List<WeatherBase>> GetWeatherList(IEnumerable<string> countriesList)
         {
             return mockWeatherList;
         }
 
-        public async Task<WeatherBase> GetCurrentWeather(string townName)
+        public async Task<WeatherBase> SearchTownWeather(string townName)
         {
             return mockWeatherList.FirstOrDefault(n => n.TownName == townName);
         }

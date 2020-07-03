@@ -61,6 +61,15 @@ namespace Weather.Resources.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove town.
+        /// </summary>
+        public static string btn_RemoveTown {
+            get {
+                return ResourceManager.GetString("btn_RemoveTown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string btn_Save {
