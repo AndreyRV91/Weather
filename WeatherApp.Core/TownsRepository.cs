@@ -62,8 +62,9 @@ namespace WeatherApp.Core
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.Error(ex.ToString());
                     File.Delete("TownList.xml");
                     throw;
                 }

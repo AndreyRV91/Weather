@@ -74,7 +74,7 @@ namespace WeatherApp.ViewModels
         {
             _eventAggregator.Subscribe(this);
 
-            await Init().ConfigureAwait(false);
+            await Init();
 
             IsInited = true;
 
@@ -93,28 +93,24 @@ namespace WeatherApp.ViewModels
             var list = new List<WeatherBase>();
             IEnumerable<string> towns;
 
-            if(IsInited)
-            {
-                towns = townsList;
-            }
-            else
-            {
-                towns = _townsRepository.LoadTownsList();
-            }
-
             try
             {
+                if (IsInited)
+                {
+                    towns = townsList;
+                }
+                else
+                {
+                    towns = _townsRepository.LoadTownsList();
+                }
+
                 IsBusy = true;
-                list = await _dataAccess.GetWeatherList(towns).ConfigureAwait(false);
+                list = await _dataAccess.GetWeatherList(towns);
                 IsBusy = false;
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show(SettingsRes.text_ErrorWhileRetrievingData);
-                _logger.Error(ex.ToString());
             }
             catch (Exception ex)
             {
+                MessageBox.Show(SettingsRes.text_ErrorWhileRetrievingData);
                 _logger.Error(ex.ToString());
             }
 
@@ -163,7 +159,7 @@ namespace WeatherApp.ViewModels
                 return;
             }
 
-            var searchResult = await _dataAccess.SearchTownWeather(searchTownName).ConfigureAwait(false);
+            var searchResult = await _dataAccess.SearchTownWeather(searchTownName);
 
             if (searchResult != null)
             {

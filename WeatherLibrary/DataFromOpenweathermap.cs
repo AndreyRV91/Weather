@@ -35,18 +35,27 @@ namespace WeatherLibrary
         public async Task<List<WeatherBase>> GetWeatherList(IEnumerable<string> townsList) //Using for update weather
         {
             var weatherList = new List<WeatherBase>();
+            WeatherBase weather;
 
             try
             {
                 foreach (var town in townsList)
                 {
-                    WeatherBase weather = await GetInformationFromWeb($"?q={town}").ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
-                    weatherList.Add(weather); 
+                    weather = await SearchTownWeather(town).ConfigureAwait(false); //there is a restriction of api.openweathermap service for request for several cities at once
+
+                    if(weather == null)
+                    {
+                        return new List<WeatherBase>();
+                    }
+                    else
+                    {
+                        weatherList.Add(weather);
+                    }
                 }
             }
             catch
             {
-                return null;
+                return new List<WeatherBase>();
             }
 
             return weatherList;

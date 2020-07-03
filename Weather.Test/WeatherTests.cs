@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WeatherApp.Core;
@@ -26,8 +27,7 @@ namespace Weather.Test
             LocalizationManager.Instance.SetCultureAtStartUp(_settings);
 
             _eventAggregator = new EventAggregator();
-
-
+            _townsRepository = new TownsRepository();
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace Weather.Test
         }
 
         [Test]
-        public async Task SelectedTown_ShouldBeMoscow()
+        public async Task FirstSelectedTown_ShouldBeMoscow()
         {
             //Arrange
             MockWeather mockWeather = new MockWeather();
@@ -132,6 +132,21 @@ namespace Weather.Test
 
             //Check wether town "Tula" had been found and automaticly choosen
             Assert.AreEqual("Tula", homePageVM.SelectedTown.TownName);
+        }
+
+        [Test]
+        public void Save_And_Load_Towns()
+        {
+            //Arrange
+            List<string> _defaultTowns = new List<string>() { "Tula", "Moscow" };
+
+            //Act
+            _townsRepository.SaveTownsList(_defaultTowns);
+            var towns = _townsRepository.LoadTownsList();
+
+            //Check wether towns have been succesfully saved and loaded
+            Assert.AreEqual("Tula", towns[0]);
+            Assert.AreEqual("Moscow", towns[1]);
         }
 
     }
